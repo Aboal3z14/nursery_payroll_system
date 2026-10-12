@@ -63,6 +63,13 @@ label{display:block;font-size:13px;font-weight:600;color:var(--mut)}label>input,
 .balance-metrics b{font-size:18px;overflow-wrap:anywhere}
 .balance-metrics div{padding:12px}
 @media(max-width:540px){.balance-metrics{grid-template-columns:1fr}.balance-metrics div{border-inline-start:0;border-bottom:1px solid var(--ln)}}
+/* due-date and reminder highlights */
+.due-overdue{color:var(--red)}.due-soon{color:#97620B}.due-paid{color:var(--lf2)}
+.due-summary{margin-top:8px;padding:10px 12px;background:var(--bg);border-radius:10px;font-size:13px}
+.alert-line{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.alert-line .nm{flex:1;min-width:200px}
+.alert-line .av{font-size:18px}
+@media(max-width:900px){#alertMetrics{grid-template-columns:1fr 1fr}}
 /* dashboard */
 .today{background:var(--lt);border-color:#C5E3D1}
 .today h2{font-size:clamp(26px,4vw,40px);line-height:1.2}.today p{color:var(--lf2);font-weight:500;margin:4px 0 16px}
@@ -204,6 +211,9 @@ dialog::backdrop{background:rgba(10,30,20,.5)}
       <label>الفصل<select id="stClass"><option value="">بدون فصل</option></select></label>
       <label>تاريخ التسجيل<input id="stEnroll" type="date"></label>
       <label>إجمالي المصروفات الدراسية للطالب *<input id="stFee" type="number" min="0" step="0.01" required placeholder="اكتب إجمالي مصروفات السنة" autocomplete="off"></label>
+      <label>تاريخ استحقاق أول دفعة (اختياري)<input id="stFirstDue" type="date"></label>
+      <label>المبلغ المطلوب في أول دفعة (اختياري)<input id="stFirstAmount" type="number" min="0.01" step="0.01" placeholder="مثلاً: 2000"></label>
+      <small class="w">إذا أدخلت تاريخ أول دفعة ومبلغها، سيتكوّن موعد استحقاق تلقائياً، وتستطيع إضافة مواعيد أخرى من صفحة الأقساط.</small>
       <label>الحالة<select id="stStatus"><option value="active">نشط</option><option value="inactive">غير نشط</option></select></label>
       <label>هاتف الطوارئ<input id="stEmergency" type="tel"></label>
       <label>ملاحظات صحية<input id="stMedical"></label>
@@ -242,19 +252,33 @@ dialog::backdrop{background:rgba(10,30,20,.5)}
       <label class="w">الطالب *<select id="feeStudent"><option value="">اختر الطالب</option></select></label>
       <div class="w" id="feeStudentSummary" aria-live="polite"></div>
       <label>المبلغ الذي دفعه *<input id="feePaid" type="number" min="0.01" step="0.01" placeholder="مثلاً: 1500"></label>
-      <label>تاريخ الدفع<input id="feeDate" type="date"></label>
+      <label>تاريخ استلام الدفعة<input id="feeDate" type="date"></label>
       <label>طريقة الدفع<select id="feeMethod"><option>نقدي</option><option>تحويل بنكي</option><option>محفظة إلكترونية</option><option>أخرى</option></select></label>
       <label>ملاحظة (اختياري)<input id="feeNote" placeholder="مثال: الدفعة الأولى"></label>
       <div class="w"><button class="btn pri" id="saveFeeBtn" data-act="saveFee">حفظ الدفعة</button></div>
      </div>
     </div>
+    <div class="panel">
+     <div class="ph"><h3>جدولة مواعيد الأقساط</h3></div>
+     <p class="hint">حدد لكل طالب قيمة وتاريخ استحقاق القسط. تسدّد الدفعات المحفوظة الأقساط الأقدم أولاً تلقائياً؛ ولا تحتاج إلى اختيار قسط عند تسجيل دفعة.</p>
+     <div class="grid">
+      <label>الطالب *<select id="dueStudent"><option value="">اختر الطالب</option></select></label>
+      <label>تاريخ الاستحقاق *<input id="dueDate" type="date"></label>
+      <label>قيمة القسط *<input id="dueAmount" type="number" min="0.01" step="0.01" placeholder="مثلاً: 2000"></label>
+      <label>وصف القسط<input id="dueLabel" placeholder="مثلاً: قسط نوفمبر"></label>
+      <div class="w"><div id="dueStudentSummary" class="hint" aria-live="polite"></div></div>
+      <div class="w bar"><button class="btn pri" id="saveDueBtn" data-act="saveDue">حفظ موعد الاستحقاق</button><button class="btn" id="cancelDueBtn" data-act="clearDue" hidden>إلغاء التعديل</button></div>
+     </div>
+    </div>
+    <div class="panel table-wrap"><div class="ph"><h3>مواعيد الاستحقاق المسجلة</h3></div><table class="rt"><thead><tr><th>الطالب</th><th>القسط</th><th>تاريخ الاستحقاق</th><th>قيمة القسط</th><th>المتبقي من القسط</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody id="dueRows"></tbody></table></div>
     <div class="bar"><input class="grow" id="feeSearch" placeholder="بحث باسم الطالب"><select id="feeFilter"><option value="">كل الطلاب</option><option value="paid">مسدد بالكامل</option><option value="due">يوجد متبقي</option></select></div>
     <div class="panel table-wrap"><table class="rt"><thead><tr><th>الطالب</th><th>المصروفات الكاملة</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="feeRows"></tbody></table></div>
     <div class="panel"><div class="ph"><h3>سجل المدفوعات</h3></div><div id="paymentHistory"></div></div>
    </section>
 
    <section class="sec" id="s-alerts" hidden>
-    <div class="panel"><div class="ph"><h3>أعياد الميلاد والأقساط</h3><button class="btn sm" data-act="refreshAlerts">تحديث التنبيهات</button></div><p class="hint">تظهر تنبيهات أعياد ميلاد الطلاب والموظفين اليوم والأقساط المتأخرة أو التي تستحق خلال 7 أيام.</p><div id="alertsList"></div></div>
+    <div class="metrics" id="alertMetrics"></div>
+    <div class="panel"><div class="ph"><h3>تنبيهات الحضانة الفعلية</h3><button class="btn sm" data-act="refreshAlerts">تحديث التنبيهات</button></div><p class="hint">تعرض هذه الصفحة المواعيد التي أدخلتها بالفعل: الأقساط المتأخرة أو المستحقة خلال 7 أيام، وأعياد الميلاد اليوم أو خلال أسبوع، والطلاب الذين لم تحدد تاريخاً لباقي مصروفاتهم. لا تُرسل إشعارات إلى الهاتف خارج التطبيق.</p><div id="alertsList"></div></div>
    </section>
 
    <section class="sec" id="s-att" hidden>
@@ -325,7 +349,7 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
 const pad=n=>String(n).padStart(2,"0"),iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,today=()=>iso(new Date());
 const L="ar-EG-u-nu-latn",num=(n,d=0)=>(+n||0).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
-const S={set:{name:"Alghars Aljadeed",currency:"EGP",overtime:1.5,permRate:.5},emps:[],students:[],classes:[],fees:[],payments:[],studentAtt:{},mo:new Map(),last:null,edit:null,ed:null,studentEdit:null};
+const S={set:{name:"Alghars Aljadeed",currency:"EGP",overtime:1.5,permRate:.5},emps:[],students:[],classes:[],fees:[],payments:[],studentAtt:{},mo:new Map(),last:null,edit:null,ed:null,studentEdit:null,dueEdit:null};
 const money=(n,d=0)=>num(n,d)+" "+({EGP:"ج.م",USD:"$",SAR:"ر.س"}[S.set.currency]||"ج.م");
 const mLabel=m=>new Date(+m.slice(0,4),+m.slice(5)-1,1).toLocaleDateString(L,{month:"long",year:"numeric"});
 const ST={present:"حاضر",absent:"غائب",vacation:"إجازة",late:"متأخر"};
@@ -393,33 +417,59 @@ async function loadNurseryData(){
  else{warn.hidden=true;warn.textContent="";}
 }
 const sName=id=>S.students.find(x=>x.id===id)?.name||"طالب محذوف",cName=id=>S.classes.find(x=>x.id===id)?.name||"بدون فصل";
-const paidFor=id=>S.payments.filter(p=>p.installmentId===id).reduce((a,p)=>a+(+p.amount||0),0); // old installment records
 const studentPaid=id=>S.payments.filter(p=>p.studentId===id).reduce((n,p)=>n+(+p.amount||0),0);
 const studentBalance=x=>Math.max(0,Number((Number(x.totalFee||0)-studentPaid(x.id)).toFixed(2)));
+const cents=n=>Math.round((Number(n)||0)*100);
+const dueOrder=(a,b)=>(a.dueDate||"9999").localeCompare(b.dueDate||"9999")||(a.createdAt||"").localeCompare(b.createdAt||"")||a.id.localeCompare(b.id);
+const dueItems=id=>S.fees.filter(f=>f.studentId===id&&Number(f.expected)>0&&f.dueDate).slice().sort(dueOrder);
+// Apply all recorded student payments to scheduled fees in due-date order.
+// This keeps the existing "select student + amount paid" flow intact.
+function dueBalances(id){let available=cents(studentPaid(id));return dueItems(id).map(f=>{const expected=cents(f.expected),applied=Math.min(expected,Math.max(available,0));available=Math.max(0,available-applied);return {...f,expected:expected/100,paid:applied/100,remaining:(expected-applied)/100}})}
+const dayNumber=d=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(d||""))return NaN;const [y,m,day]=d.split("-").map(Number);const stamp=Date.UTC(y,m-1,day);return new Date(stamp).toISOString().slice(0,10)===d?Math.floor(stamp/86400000):NaN};
+const daysFromToday=d=>dayNumber(d)-dayNumber(today());
+function nextBirthday(dob){if(!/^\d{4}-\d{2}-\d{2}$/.test(dob||""))return null;const now=today(),year=+now.slice(0,4),month=+dob.slice(5,7),day=+dob.slice(8,10);for(let y=year;y<=year+4;y++){const date=iso(new Date(y,month-1,day));if(date.slice(5)!==dob.slice(5))continue;const distance=dayNumber(date)-dayNumber(now);if(distance>=0)return{date,days:distance}}return null}
+function dueState(f){if(f.remaining<=0)return{label:"مسدد",css:"due-paid"};const days=daysFromToday(f.dueDate);if(days<0)return{label:"متأخر "+(-days)+" يوم",css:"due-overdue"};if(days===0)return{label:"مستحق اليوم",css:"due-soon"};if(days<=7)return{label:"خلال "+days+" أيام",css:"due-soon"};return{label:"قادم",css:""}}
+function remainingWithoutSchedule(student){const planned=dueItems(student.id).reduce((sum,f)=>sum+cents(f.expected),0);return Math.max(0,Math.min(cents(studentBalance(student)),cents(student.totalFee)-planned))/100}
 function balanceCards(student){const paid=studentPaid(student.id),left=studentBalance(student);return `<div class="metrics balance-metrics"><div><b>${money(student.totalFee||0,2)}</b><small>إجمالي المصروفات</small></div><div><b>${money(paid,2)}</b><small>إجمالي المدفوع</small></div><div><b>${money(left,2)}</b><small>المتبقي على الطالب</small></div></div>`}
 function fillNurserySelects(){
  const opt=a=>a.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join("");
  const keep=id=>$(id)?.value||"";
- const cl=keep("#stClass"),att=keep("#stAttClass"),fee=keep("#feeStudent"),teach=keep("#clTeacher");
+ const cl=keep("#stClass"),att=keep("#stAttClass"),fee=keep("#feeStudent"),due=keep("#dueStudent"),teach=keep("#clTeacher");
  $("#stClass").innerHTML='<option value="">بدون فصل</option>'+opt(S.classes);
  $("#stAttClass").innerHTML='<option value="">كل الفصول</option>'+opt(S.classes);
  $("#feeStudent").innerHTML='<option value="">اختر الطالب</option>'+opt(S.students);
+ $("#dueStudent").innerHTML='<option value="">اختر الطالب</option>'+opt(S.students);
  $("#clTeacher").innerHTML='<option value="">بدون معلم</option>'+opt(S.emps.filter(x=>x.status==="active"));
- $("#stClass").value=cl;$("#stAttClass").value=att;$("#feeStudent").value=fee;$("#clTeacher").value=teach;
+ $("#stClass").value=cl;$("#stAttClass").value=att;$("#feeStudent").value=fee;$("#dueStudent").value=due;$("#clTeacher").value=teach;
 }
 async function reloadNursery(){await loadNurseryData();fillNurserySelects()}
-function showStudentSummary(){const student=S.students.find(x=>x.id===S.studentEdit),box=$("#studentFinanceSummary");box.hidden=!student;box.innerHTML=student?`<h3 style="margin-bottom:10px">رصيد الطالب الحالي</h3>${balanceCards(student)}`:""}
+function showStudentSummary(){const student=S.students.find(x=>x.id===S.studentEdit),box=$("#studentFinanceSummary");box.hidden=!student;
+ const dues=student?dueBalances(student.id):[],open=dues.filter(f=>f.remaining>0),next=open[0];
+ box.innerHTML=student?`<h3 style="margin-bottom:10px">رصيد الطالب الحالي</h3>${balanceCards(student)}<div class="due-summary">${next?`<b>أقرب قسط لم يُسدّد بالكامل:</b> ${esc(next.dueDate)} · ${money(next.remaining,2)} <span class="${dueState(next).css}">(${dueState(next).label})</span>`:"لا توجد أقساط مجدولة غير مسددة"}${remainingWithoutSchedule(student)>0?`<div class="due-overdue">متبقي بدون تاريخ استحقاق: ${money(remainingWithoutSchedule(student),2)} — أضف موعداً من قسم الأقساط.</div>`:""}</div>`:""}
 function rStudents(){fillNurserySelects();let q=$("#stSearch").value.toLowerCase(),f=$("#stFilter").value;let a=S.students.filter(x=>(!q||[x.name,x.guardian,x.phone].some(v=>String(v||"").toLowerCase().includes(q)))&&(!f||x.status===f));$("#studentRows").innerHTML=a.map(x=>{let paid=studentPaid(x.id),left=studentBalance(x);return `<tr><td><b>${esc(x.name)}</b><small>${esc(x.dob||"")}</small></td><td>${esc(x.guardian||"—")}<small>${esc(x.phone||"")}</small></td><td>${esc(cName(x.classId))}</td><td>${money(x.totalFee||0,2)}</td><td>${money(paid,2)}</td><td><b>${money(left,2)}</b></td><td class="acts"><button class="btn sm" data-act="editStudent" data-id="${x.id}">بيانات الطالب</button> <button class="btn sm" data-act="payStudent" data-id="${x.id}" ${left<=0?"disabled":""}>سداد</button> <button class="btn sm bad" data-act="delStudent" data-id="${x.id}">حذف</button></td></tr>`}).join("")||'<tr><td colspan="7" class="empty">لا توجد نتائج.</td></tr>';showStudentSummary()}
-function clearStudent(){S.studentEdit=null;["stName","stDob","stGuardian","stPhone","stEnroll","stEmergency","stMedical","stNotes"].forEach(i=>$("#"+i).value="");$("#stFee").value="";$("#stClass").value="";$("#stStatus").value="active";showStudentSummary()}
-function editStudent(id){let x=S.students.find(a=>a.id===id);if(!x)return;S.studentEdit=id;let m={stName:"name",stDob:"dob",stGuardian:"guardian",stPhone:"phone",stClass:"classId",stEnroll:"enrollDate",stFee:"totalFee",stStatus:"status",stEmergency:"emergency",stMedical:"medical",stNotes:"notes"};Object.entries(m).forEach(([a,b])=>$("#"+a).value=x[b]??"");showStudentSummary();window.scrollTo({top:0,behavior:"smooth"})}
+function clearStudent(){S.studentEdit=null;["stName","stDob","stGuardian","stPhone","stEnroll","stEmergency","stMedical","stNotes","stFirstDue","stFirstAmount"].forEach(i=>$("#"+i).value="");$("#stFee").value="";$("#stClass").value="";$("#stStatus").value="active";showStudentSummary()}
+function editStudent(id){let x=S.students.find(a=>a.id===id);if(!x)return;S.studentEdit=id;let m={stName:"name",stDob:"dob",stGuardian:"guardian",stPhone:"phone",stClass:"classId",stEnroll:"enrollDate",stFee:"totalFee",stStatus:"status",stEmergency:"emergency",stMedical:"medical",stNotes:"notes"};Object.entries(m).forEach(([a,b])=>$("#"+a).value=x[b]??"");const first=S.fees.find(f=>f.studentId===id&&f.origin==="registration");$("#stFirstDue").value=first?.dueDate||"";$("#stFirstAmount").value=first?.expected??"";showStudentSummary();window.scrollTo({top:0,behavior:"smooth"})}
 async function saveStudent(){
  const raw=$("#stFee").value.trim(),tuition=Number(raw),name=$("#stName").value.trim();
  if(!name)return toast("اسم الطالب مطلوب",1);
  if(raw===""||!Number.isFinite(tuition)||tuition<0)return toast("أدخل إجمالي المصروفات الدراسية عند التسجيل",1);
  if(S.studentEdit&&tuition+0.001<studentPaid(S.studentEdit))return toast("لا يمكن جعل المصروفات أقل من إجمالي المبالغ المدفوعة",1);
+ const firstDate=$("#stFirstDue").value,firstRaw=$("#stFirstAmount").value,firstAmount=Number(firstRaw);
+ if(!!firstDate!==!!firstRaw)return toast("أدخل تاريخ أول دفعة ومبلغها معاً، أو اترك الاثنين فارغين",1);
+ if(firstRaw&&(!Number.isFinite(firstAmount)||cents(firstAmount)<=0||cents(firstAmount)!==firstAmount*100))return toast("أدخل مبلغ أول دفعة بشكل صحيح حتى خانتين عشريتين",1);
+ if(firstDate&&(!Number.isFinite(dayNumber(firstDate))||cents(firstAmount)>cents(tuition)))return toast("تاريخ أو مبلغ أول دفعة غير صالح",1);
+ const currentFirst=S.fees.find(f=>f.studentId===S.studentEdit&&f.origin==="registration");
+ const otherDues=S.fees.filter(f=>f.studentId===S.studentEdit&&f.id!==currentFirst?.id).reduce((n,f)=>n+cents(f.expected),0);
+ if(otherDues+cents(firstRaw?firstAmount:0)>cents(tuition))return toast("مجموع الأقساط المجدولة أكبر من مصروفات الطالب",1);
  let v={name,dob:$("#stDob").value,guardian:$("#stGuardian").value.trim(),phone:$("#stPhone").value.trim(),classId:$("#stClass").value,enrollDate:$("#stEnroll").value,totalFee:tuition,status:$("#stStatus").value,emergency:$("#stEmergency").value,medical:$("#stMedical").value,notes:$("#stNotes").value,updatedAt:new Date().toISOString()};
  let id=S.studentEdit||doc(collection(db,"students")).id;
- try{await setDoc(doc(db,"students",id),v,{merge:true});clearStudent();await reloadNursery();rStudents();toast("تم حفظ الطالب وإجمالي مصروفاته")}
+ try{
+  // Save the student and the optional first due date in one atomic batch.
+  const batch=writeBatch(db);
+  batch.set(doc(db,"students",id),v,{merge:true});
+  if(firstDate){const firstId=currentFirst?.id||doc(collection(db,"studentInstallments")).id;batch.set(doc(db,"studentInstallments",firstId),{studentId:id,dueDate:firstDate,expected:firstAmount,label:"الدفعة الأولى",origin:"registration",createdAt:currentFirst?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()},{merge:true})}
+  else if(currentFirst)batch.delete(doc(db,"studentInstallments",currentFirst.id));
+  await batch.commit();clearStudent();await reloadNursery();rStudents();toast("تم حفظ الطالب ومواعيد استحقاقه")}
  catch(e){toast("تعذر الحفظ ("+e.code+")",1)}
 }
 async function delStudent(id){let x=S.students.find(a=>a.id===id);if(!x)return;if(S.payments.some(p=>p.studentId===id))return toast("لا يمكن حذف طالب له مدفوعات مسجلة؛ اجعله غير نشط للحفاظ على السجل المالي",1);if(!confirm("حذف ملف الطالب "+x.name+"؟"))return;try{await deleteDoc(doc(db,"students",id));await reloadNursery();rStudents();toast("تم حذف الطالب")}catch(e){toast("تعذر الحذف",1)}}
@@ -441,6 +491,7 @@ async function saveFee(){
  if(raw===""||!Number.isFinite(amount)||amount<=0)return toast("اكتب مبلغ الدفعة بشكل صحيح",1);
  if(Math.round(amount*100)/100!==amount)return toast("اكتب مبلغاً حتى خانتين عشريتين",1);
  if(amount>studentBalance(x)+0.001)return toast("المبلغ أكبر من المتبقي على الطالب: "+money(studentBalance(x),2),1);
+ const paidDate=$("#feeDate").value||today();if(!Number.isFinite(dayNumber(paidDate))||paidDate>today())return toast("تاريخ استلام الدفعة يجب أن يكون اليوم أو يوماً سابقاً",1);
  const btn=$("#saveFeeBtn");btn.disabled=true;
  try{
   // Recheck payments from Firebase before writing, to prevent a stale tab from overpaying.
@@ -449,11 +500,35 @@ async function saveFee(){
   const remain=Math.max(0,Number((Number(x.totalFee||0)-paid).toFixed(2)));
   if(amount>remain+0.001){await reloadNursery();rFees();return toast("تم تسجيل دفعة أخرى بالفعل؛ المتبقي الآن: "+money(remain,2),1)}
   const id=doc(collection(db,"studentPayments")).id;
-  await setDoc(doc(db,"studentPayments",id),{studentId,amount,date:$("#feeDate").value||today(),method:$("#feeMethod").value,note:$("#feeNote").value.trim(),label:"دفعة مصروفات",createdAt:new Date().toISOString()});
+  await setDoc(doc(db,"studentPayments",id),{studentId,amount,date:paidDate,method:$("#feeMethod").value,note:$("#feeNote").value.trim(),label:"دفعة مصروفات",createdAt:new Date().toISOString()});
   $("#feePaid").value="";$("#feeNote").value="";
   await reloadNursery();rFees();toast("تم حفظ الدفعة وتحديث رصيد الطالب")
  }catch(e){toast("تعذر تسجيل الدفعة ("+(e.code||"خطأ")+")",1)}
  finally{showFeeStudentSummary()}
+}
+function showDueStudentSummary(){
+ const x=S.students.find(s=>s.id===$("#dueStudent").value),box=$("#dueStudentSummary");
+ if(!x){box.textContent="اختر الطالب لعرض إجمالي المصروفات والمبلغ الذي تمت جدولته.";return}
+ const planned=dueItems(x.id).filter(f=>f.id!==S.dueEdit).reduce((n,f)=>n+cents(f.expected),0)/100;
+ box.textContent="إجمالي المصروفات: "+money(x.totalFee,2)+" · إجمالي المواعيد المجدولة الأخرى: "+money(planned,2)+" · المتاح لجدولته: "+money(Math.max(0,Number(x.totalFee||0)-planned),2);
+}
+function clearDue(){S.dueEdit=null;["dueAmount","dueDate","dueLabel"].forEach(k=>$("#"+k).value="");$("#saveDueBtn").textContent="حفظ موعد الاستحقاق";$("#cancelDueBtn").hidden=true;showDueStudentSummary()}
+function editDue(id){const f=S.fees.find(x=>x.id===id);if(!f)return;S.dueEdit=id;$("#dueStudent").value=f.studentId;$("#dueAmount").value=f.expected;$("#dueDate").value=f.dueDate||"";$("#dueLabel").value=f.label||"";$("#saveDueBtn").textContent="حفظ تعديل الموعد";$("#cancelDueBtn").hidden=false;showDueStudentSummary();$("#dueStudent").scrollIntoView({behavior:"smooth",block:"center"})}
+async function saveDue(){
+ const x=S.students.find(s=>s.id===$("#dueStudent").value),date=$("#dueDate").value,raw=$("#dueAmount").value,amount=Number(raw);
+ if(!x)return toast("اختر الطالب أولاً",1);
+ if(!Number.isFinite(dayNumber(date)))return toast("حدد تاريخ استحقاق صحيح",1);
+ if(!raw||!Number.isFinite(amount)||cents(amount)<=0||Math.abs(amount*100-cents(amount))>0.00001)return toast("حدد قيمة القسط حتى خانتين عشريتين",1);
+ const old=S.fees.find(f=>f.id===S.dueEdit),scheduled=S.fees.filter(f=>f.studentId===x.id&&f.id!==old?.id).reduce((n,f)=>n+cents(f.expected),0);
+ if(scheduled+cents(amount)>cents(x.totalFee))return toast("مجموع الأقساط المجدولة لا يمكن أن يتجاوز إجمالي المصروفات",1);
+ const id=old?.id||doc(collection(db,"studentInstallments")).id,btn=$("#saveDueBtn");btn.disabled=true;
+ try{await setDoc(doc(db,"studentInstallments",id),{studentId:x.id,dueDate:date,expected:amount,label:$("#dueLabel").value.trim()||"قسط مصروفات",origin:old?.origin||"installments",createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()},{merge:true});clearDue();await reloadNursery();rFees();rAlerts();toast("تم حفظ موعد الاستحقاق وتحديث التنبيهات")}
+ catch(e){toast("تعذر حفظ الموعد ("+(e.code||"خطأ")+")",1)}finally{btn.disabled=false}
+}
+async function delDue(id){const f=S.fees.find(x=>x.id===id);if(!f||!confirm("حذف موعد استحقاق «"+(f.label||"قسط")+"»؟ لن تُحذف أي دفعات مستلمة."))return;try{await deleteDoc(doc(db,"studentInstallments",id));if(S.dueEdit===id)clearDue();await reloadNursery();rFees();rAlerts();toast("تم حذف موعد الاستحقاق مع الإبقاء على المدفوعات")}catch(e){toast("تعذر الحذف",1)}}
+function rDueRows(){const balances=new Map(S.students.map(x=>[x.id,dueBalances(x.id)]));const all=[...balances.values()].flat().sort(dueOrder);
+ $("#dueRows").innerHTML=all.map(f=>{const status=dueState(f);return `<tr><td><b>${esc(sName(f.studentId))}</b></td><td>${esc(f.label||"قسط")}</td><td class="n">${esc(f.dueDate)}</td><td class="n">${money(f.expected,2)}</td><td class="n">${money(f.remaining,2)}</td><td><span class="pill ${f.remaining>0?"g":""} ${status.css}">${status.label}</span></td><td class="acts"><button class="btn sm" data-act="editDue" data-id="${esc(f.id)}">تعديل</button> <button class="btn sm bad" data-act="delDue" data-id="${esc(f.id)}">حذف</button></td></tr>`}).join("")||'<tr><td colspan="7" class="empty">لم تُجدول أقساط بعد. أضف أول موعد استحقاق من النموذج أعلاه.</td></tr>';
+ showDueStudentSummary();
 }
 function rFees(){
  fillNurserySelects();const q=$("#feeSearch").value.toLowerCase(),filter=$("#feeFilter").value;
@@ -462,11 +537,35 @@ function rFees(){
  $("#feeMetrics").innerHTML=[["إجمالي مصروفات الطلاب",money(total,2)],["إجمالي المدفوع",money(paid,2)],["إجمالي المتبقي",money(left,2)],["طلاب لديهم متبقي",S.students.filter(x=>studentBalance(x)>0).length]].map(([a,b])=>`<div><b style="font-size:20px">${b}</b><small>${a}</small></div>`).join("");
  $("#feeRows").innerHTML=rows.map(x=>{let paid=studentPaid(x.id),left=studentBalance(x);return `<tr><td><b>${esc(x.name)}</b><small>${esc(cName(x.classId))}</small></td><td>${money(x.totalFee||0,2)}</td><td>${money(paid,2)}</td><td><b>${money(left,2)}</b></td><td><span class="pill ${left?"g":""}">${left?"يوجد متبقي":"مدفوع بالكامل"}</span></td><td><button class="btn sm" data-act="payStudent" data-id="${x.id}" ${left<=0?"disabled":""}>سداد</button></td></tr>`}).join("")||'<tr><td colspan="6" class="empty">لا توجد نتائج.</td></tr>';
  $("#paymentHistory").innerHTML=S.payments.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||"").localeCompare(a.createdAt||"")).map(p=>`<div class="arow"><div><b>${esc(sName(p.studentId))} · ${esc(p.note||p.label||"دفعة مصروفات")}</b><small>${esc(p.date||"")} · ${esc(p.method||"")}</small></div><b>${money(p.amount,2)}</b></div>`).join("")||'<div class="empty">لا توجد دفعات.</div>';
- showFeeStudentSummary();
+ showFeeStudentSummary();rDueRows();
 }
 function payStudent(id){if(!S.students.some(x=>x.id===id))return;go("fees");$("#feeStudent").value=id;showFeeStudentSummary();$("#feePaid").focus()}
-function getAlerts(){let a=[],t=today(),md=t.slice(5);S.students.filter(s=>s.status==="active"&&s.dob&&s.dob.slice(5)===md).forEach(s=>a.push(["🎂","عيد ميلاد الطالب: "+s.name,"تاريخ الميلاد "+s.dob]));S.emps.filter(s=>s.status==="active"&&s.dob&&s.dob.slice(5)===md).forEach(s=>a.push(["🎂","عيد ميلاد الموظف: "+s.name,"تاريخ الميلاد "+s.dob]));S.fees.forEach(f=>{let left=(+f.expected||0)-paidFor(f.id);if(left>0&&f.dueDate&&f.dueDate<t)a.push(["⚠️","قسط متأخر: "+sName(f.studentId),f.label+" · المتبقي "+money(left,2)]);else if(left>0&&f.dueDate&&f.dueDate>=t&&(new Date(f.dueDate)-new Date(t))/86400000<=7)a.push(["💳","موعد قسط قريب: "+sName(f.studentId),f.label+" · "+f.dueDate])});return a}
-function rAlerts(){let a=getAlerts();$("#alertsList").innerHTML=a.map(x=>`<div class="arow"><div class="nm"><i class="av">${x[0]}</i><div><b>${esc(x[1])}</b><small>${esc(x[2])}</small></div></div></div>`).join("")||'<div class="empty">لا توجد تنبيهات حالياً.</div>'}
+function planStudent(id){if(!S.students.some(x=>x.id===id))return;go("fees");clearDue();$("#dueStudent").value=id;showDueStudentSummary();$("#dueDate").focus()}
+function getAlerts(){
+ const result=[];
+ for(const student of S.students.filter(s=>s.status==="active")){
+  const birthday=nextBirthday(student.dob);
+  if(birthday&&birthday.days<=7)result.push({type:"birthday",icon:"🎂",title:"عيد ميلاد الطالب: "+student.name,details:birthday.days===0?"اليوم · "+birthday.date:"بعد "+birthday.days+" أيام · "+birthday.date,days:birthday.days});
+  for(const f of dueBalances(student.id)){
+   if(f.remaining<=0)continue;
+   const days=daysFromToday(f.dueDate);
+   if(days>7)continue;
+   result.push({type:days<0?"overdue":"upcoming",icon:days<0?"⚠️":"💳",title:(days<0?"قسط متأخر: ":days===0?"قسط مستحق اليوم: ":"قسط قريب: ")+student.name,details:(f.label||"قسط")+" · "+f.dueDate+" · المتبقي "+money(f.remaining,2),days,studentId:student.id});
+  }
+  const unscheduled=remainingWithoutSchedule(student);
+  if(unscheduled>0)result.push({type:"unscheduled",icon:"📅",title:"لم تُحدد مواعيد لكل المصروفات: "+student.name,details:"المبلغ بدون تاريخ استحقاق: "+money(unscheduled,2),studentId:student.id});
+ }
+ for(const emp of S.emps.filter(e=>e.status==="active")){
+  const birthday=nextBirthday(emp.dob);
+  if(birthday&&birthday.days<=7)result.push({type:"birthday",icon:"🎂",title:"عيد ميلاد الموظف: "+emp.name,details:birthday.days===0?"اليوم · "+birthday.date:"بعد "+birthday.days+" أيام · "+birthday.date,days:birthday.days});
+ }
+ const weight={overdue:0,upcoming:1,birthday:2,unscheduled:3};
+ return result.sort((a,b)=>weight[a.type]-weight[b.type]||(a.days??99)-(b.days??99));
+}
+function rAlerts(){const alerts=getAlerts();const cnt=k=>alerts.filter(a=>a.type===k).length;
+ $("#alertMetrics").innerHTML=[["أقساط متأخرة",cnt("overdue")],["مستحق خلال أسبوع",cnt("upcoming")],["أعياد ميلاد قريبة",cnt("birthday")],["مبالغ تحتاج مواعيد",cnt("unscheduled")]].map(([title,value])=>`<div><b>${value}</b><small>${title}</small></div>`).join("");
+ $("#alertsList").innerHTML=alerts.map(a=>`<div class="arow alert-line"><div class="nm"><i class="av">${a.icon}</i><div><b>${esc(a.title)}</b><small>${esc(a.details)}</small></div></div>${a.studentId?`<button class="btn sm ${a.type==="unscheduled"?"":"pri"}" data-act="${a.type==="unscheduled"?"planStudent":"payStudent"}" data-id="${esc(a.studentId)}">${a.type==="unscheduled"?"جدولة موعد":"تسجيل دفعة"}</button>`:""}</div>`).join("")||'<div class="empty">لا توجد تنبيهات حالياً. المواعيد المسددة لا تظهر كتنبيهات.</div>';
+}
 
 /* ---------- employees ---------- */
 const OPT=a=>a.map(v=>[v,v]);
@@ -547,7 +646,7 @@ async function savePw(){const a=$("#pw0").value,n=$("#pw1").value;
 /* ---------- events ---------- */
 const A={
  menu:()=>$("#side").classList.toggle("open"),out:()=>signOut(auth),closeD:b=>b.closest("dialog").close(),
- addEmp:()=>{go("emp");openEmp(null)},saveStudent,clearStudent,editStudent:b=>editStudent(b.dataset.id),delStudent:b=>delStudent(b.dataset.id),saveClass,delClass:b=>delClass(b.dataset.id),saveFee,payStudent:b=>payStudent(b.dataset.id),refreshAlerts:rAlerts,stAttAll:()=>$$("#stAttList .arow").forEach(r=>r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.st==="present"))),saveStAtt,editEmp:b=>openEmp(b.dataset.id),delEmp:b=>delEmp(b.dataset.id),saveEmp,
+ addEmp:()=>{go("emp");openEmp(null)},saveStudent,clearStudent,editStudent:b=>editStudent(b.dataset.id),delStudent:b=>delStudent(b.dataset.id),saveClass,delClass:b=>delClass(b.dataset.id),saveFee,saveDue,clearDue,editDue:b=>editDue(b.dataset.id),delDue:b=>delDue(b.dataset.id),payStudent:b=>payStudent(b.dataset.id),planStudent:b=>planStudent(b.dataset.id),refreshAlerts:rAlerts,stAttAll:()=>$$("#stAttList .arow").forEach(r=>r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.st==="present"))),saveStAtt,editEmp:b=>openEmp(b.dataset.id),delEmp:b=>delEmp(b.dataset.id),saveEmp,
  att:b=>{setAtt(b.dataset.id,b.dataset.s);const r=b.closest(".arow");r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x==b));r.querySelector("small").textContent=S.emps.find(e=>e.id==b.dataset.id).jobTitle+" · محفوظ"},
  attAll:()=>$$("#al .arow").forEach(r=>r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.s=="present"))),attSave,permSave,
  payEdit:b=>payEdit(b.dataset.id),saveEdit,snap,
@@ -560,7 +659,7 @@ $$("dialog").forEach(d=>d.addEventListener("click",e=>{if(e.target==d)d.close()}
 ["eq","ed","es"].forEach(i=>$("#"+i).addEventListener("input",rEmp));
 ["stSearch","stFilter"].forEach(i=>$("#"+i)?.addEventListener("input",rStudents));["feeSearch","feeFilter"].forEach(i=>$("#"+i)?.addEventListener("input",rFees));
 $("#stAttList").addEventListener("click",e=>{let b=e.target.closest("[data-st]");if(b)b.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b))});
-$("#feeStudent").onchange=showFeeStudentSummary;$("#stAttDate").onchange=rStudentAtt;$("#stAttClass").onchange=rStudentAtt;
+$("#feeStudent").onchange=showFeeStudentSummary;$("#dueStudent").onchange=showDueStudentSummary;$("#stAttDate").onchange=rStudentAtt;$("#stAttClass").onchange=rStudentAtt;
 $("#aDate").onchange=rAtt;$("#pDate").onchange=rPerm;$("#pMonth").onchange=rPay;
 form("#eForm",F);$("#aDate").value=$("#pDate").value=$("#stAttDate").value=$("#feeDate").value=today();showFeeStudentSummary();
 {const n=new Date();$("#pMonth").innerHTML=Array.from({length:12},(_,i)=>{const d=new Date(n.getFullYear(),n.getMonth()-i,1),v=d.getFullYear()+"-"+pad(d.getMonth()+1);return`<option value="${v}">${mLabel(v)}</option>`}).join("")}

@@ -41,13 +41,28 @@ label{display:block;font-size:13px;font-weight:600;color:var(--mut)}label>input,
 .logo{display:flex;align-items:center;gap:10px;padding:4px 10px 22px;font-weight:700;font-size:17px}.logo .ic{color:#7DD3A0;width:26px;height:26px}
 .nv{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:0;background:none;color:#B9D0C2;border-radius:10px;font-size:14px;font-weight:500;text-align:right}
 .nv:hover{background:#1C4531;color:#fff}.nv.on{background:var(--lf);color:#fff}
+.side-nav{overflow-y:auto;overflow-x:hidden;min-height:0;scrollbar-width:thin;scrollbar-color:#3E654F transparent}
+.nav-group{margin:2px 0}.nav-group summary{list-style:none;cursor:pointer;user-select:none}.nav-group summary::-webkit-details-marker{display:none}
+.nav-group .nav-heading{font-weight:600}.nav-group .nav-heading span:nth-child(2){flex:1}
+.nav-chevron{width:8px;height:8px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .2s;margin:0 5px 4px 2px}
+.nav-group[open] .nav-chevron{transform:rotate(135deg);margin-bottom:0;margin-top:4px}
+.nav-group.active .nav-heading{color:#fff;background:#1C4531}
+.nav-children{padding:3px 13px 5px 0;border-right:1px solid #3E654F;margin-right:22px}
+.nav-child{font-size:13px;padding:8px 12px 8px 6px;min-height:36px}
+.nav-child.on{background:var(--lf);color:#fff}
 .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid #24503B;font-size:13px}.me button{margin-right:auto;background:none;border:0;color:#B9D0C2}
 .shell{margin-right:232px}
 .top{display:flex;align-items:center;gap:12px;padding:22px 32px 0}.top h1{font-size:22px}.menu{display:none}
 .main{padding:20px 32px 48px;max-width:1180px}
 .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}.bar input,.bar select{width:auto;min-width:150px}.bar .grow{flex:1;min-width:200px}
 .panel{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:20px;margin-bottom:16px}
+.table-wrap{overflow-x:auto}.hint{color:var(--mut);font-size:13px;margin-bottom:10px}#s-satt .seg button{color:var(--ink)}#s-satt .seg button.on{background:var(--lf);border-color:var(--lf);color:#fff}
 .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.ph h3{font-size:16px}
+/* Student tuition balance summaries */
+.balance-metrics{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:0}
+.balance-metrics b{font-size:18px;overflow-wrap:anywhere}
+.balance-metrics div{padding:12px}
+@media(max-width:540px){.balance-metrics{grid-template-columns:1fr}.balance-metrics div{border-inline-start:0;border-bottom:1px solid var(--ln)}}
 /* dashboard */
 .today{background:var(--lt);border-color:#C5E3D1}
 .today h2{font-size:clamp(26px,4vw,40px);line-height:1.2}.today p{color:var(--lf2);font-weight:500;margin:4px 0 16px}
@@ -127,12 +142,27 @@ dialog::backdrop{background:rgba(10,30,20,.5)}
 <div id="app" hidden>
  <aside id="side">
   <div class="logo"><svg class="ic"><use href="#i-sprout"/></svg><span id="sName">الغرس الجديد</span></div>
-  <nav>
+  <nav class="side-nav" aria-label="القائمة الرئيسية">
    <button class="nv on" data-go="dash"><svg class="ic"><use href="#i-dash"/></svg>لوحة التحكم</button>
-   <button class="nv" data-go="emp"><svg class="ic"><use href="#i-users"/></svg>الموظفون</button>
-   <button class="nv" data-go="att"><svg class="ic"><use href="#i-cal"/></svg>الحضور</button>
-   <button class="nv" data-go="perm"><svg class="ic"><use href="#i-clock"/></svg>الأذونات</button>
-   <button class="nv" data-go="pay"><svg class="ic"><use href="#i-pay"/></svg>الرواتب</button>
+   <details class="nav-group" data-group="students">
+    <summary class="nv nav-heading"><svg class="ic"><use href="#i-users"/></svg><span>الطلاب</span><span class="nav-chevron" aria-hidden="true"></span></summary>
+    <div class="nav-children">
+     <button class="nv nav-child" data-go="students">بيانات الطلاب</button>
+     <button class="nv nav-child" data-go="classes">الفصول</button>
+     <button class="nv nav-child" data-go="satt">حضور الطلاب</button>
+     <button class="nv nav-child" data-go="fees">الأقساط والمصروفات</button>
+    </div>
+   </details>
+   <details class="nav-group" data-group="staff">
+    <summary class="nv nav-heading"><svg class="ic"><use href="#i-users"/></svg><span>الموظفون</span><span class="nav-chevron" aria-hidden="true"></span></summary>
+    <div class="nav-children">
+     <button class="nv nav-child" data-go="emp">بيانات الموظفين</button>
+     <button class="nv nav-child" data-go="att">حضور الموظفين</button>
+     <button class="nv nav-child" data-go="perm">الأذونات</button>
+     <button class="nv nav-child" data-go="pay">الرواتب</button>
+    </div>
+   </details>
+   <button class="nv" data-go="alerts"><svg class="ic"><use href="#i-clock"/></svg>التنبيهات</button>
    <button class="nv" data-go="set"><svg class="ic"><use href="#i-set"/></svg>الإعدادات</button>
   </nav>
   <div class="me"><span id="uName"></span><button data-act="out" aria-label="تسجيل الخروج"><svg class="ic"><use href="#i-out"/></svg></button></div>
@@ -140,6 +170,7 @@ dialog::backdrop{background:rgba(10,30,20,.5)}
  <div class="shell">
   <header class="top"><button class="btn menu sm" data-act="menu" aria-label="القائمة"><svg class="ic"><use href="#i-menu"/></svg></button><h1 id="title"></h1></header>
   <div class="main">
+   <div id="dataWarn" class="warn" hidden role="status" style="margin-bottom:16px"></div>
 
    <section class="sec" id="s-dash">
     <div class="panel today">
@@ -159,6 +190,71 @@ dialog::backdrop{background:rgba(10,30,20,.5)}
      <select id="es"><option value="">كل الحالات</option><option value="active">نشط</option><option value="inactive">غير نشط</option></select>
      <button class="btn pri" data-act="addEmp"><svg class="ic"><use href="#i-plus"/></svg>إضافة موظف</button></div>
     <div class="panel"><table class="rt"><thead><tr><th>الموظف</th><th>القسم</th><th>الراتب</th><th>الحالة</th><th></th></tr></thead><tbody id="eb"></tbody></table></div>
+   </section>
+
+
+   <!-- Students: separate from staff and payroll -->
+   <section class="sec" id="s-students" hidden>
+    <div class="panel"><div class="ph"><h3>ملف الطالب</h3><small>إضافة طالب جديد أو تعديل بيانات طالب مسجل</small></div>
+     <div class="grid">
+      <label>اسم الطالب *<input id="stName" autocomplete="off"></label>
+      <label>تاريخ الميلاد<input id="stDob" type="date"></label>
+      <label>اسم ولي الأمر<input id="stGuardian"></label>
+      <label>هاتف ولي الأمر<input id="stPhone" type="tel"></label>
+      <label>الفصل<select id="stClass"><option value="">بدون فصل</option></select></label>
+      <label>تاريخ التسجيل<input id="stEnroll" type="date"></label>
+      <label>إجمالي المصروفات الدراسية للطالب *<input id="stFee" type="number" min="0" step="0.01" required placeholder="اكتب إجمالي مصروفات السنة" autocomplete="off"></label>
+      <label>الحالة<select id="stStatus"><option value="active">نشط</option><option value="inactive">غير نشط</option></select></label>
+      <label>هاتف الطوارئ<input id="stEmergency" type="tel"></label>
+      <label>ملاحظات صحية<input id="stMedical"></label>
+      <label class="w">ملاحظات إضافية<textarea id="stNotes" rows="2"></textarea></label>
+      <div class="w" id="studentFinanceSummary" hidden aria-live="polite"></div>
+      <div class="w bar"><button class="btn pri" data-act="saveStudent">حفظ الطالب</button><button class="btn" data-act="clearStudent">تفريغ البيانات / إضافة جديد</button></div>
+     </div></div>
+    <div class="bar"><input class="grow" id="stSearch" placeholder="البحث باسم الطالب أو ولي الأمر أو الهاتف"><select id="stFilter"><option value="">كل الطلاب</option><option value="active">النشطون</option><option value="inactive">غير النشطين</option></select></div>
+    <div class="panel table-wrap"><table class="rt"><thead><tr><th>الطالب</th><th>ولي الأمر</th><th>الفصل</th><th>المصروفات</th><th>المدفوع</th><th>المتبقي</th><th>الإجراءات</th></tr></thead><tbody id="studentRows"></tbody></table></div>
+   </section>
+
+   <section class="sec" id="s-classes" hidden>
+    <div class="panel"><div class="ph"><h3>إضافة فصل</h3></div><div class="grid">
+     <label>اسم الفصل *<input id="clName" placeholder="مثال: KG1 - A"></label>
+     <label>الفئة العمرية<input id="clAge" placeholder="مثال: 3 - 4 سنوات"></label>
+     <label>السعة القصوى<input id="clCapacity" type="number" min="1" value="20"></label>
+     <label>المعلم المسؤول<select id="clTeacher"><option value="">بدون معلم</option></select></label>
+     <label>العام الدراسي<input id="clYear" placeholder="2026 / 2027"></label>
+     <label>ملاحظات<input id="clNotes"></label>
+     <div class="w"><button class="btn pri" data-act="saveClass">حفظ الفصل</button></div>
+    </div></div>
+    <div class="panel table-wrap"><table class="rt"><thead><tr><th>الفصل</th><th>العمر</th><th>المعلم</th><th>الطلاب / السعة</th><th>العام</th><th>الإجراءات</th></tr></thead><tbody id="classRows"></tbody></table></div>
+   </section>
+
+   <section class="sec" id="s-satt" hidden>
+    <div class="bar"><input id="stAttDate" type="date" aria-label="تاريخ حضور الطلاب"><select id="stAttClass" aria-label="تصفية حسب الفصل"><option value="">كل الفصول</option></select><button class="btn" data-act="stAttAll">الكل حاضر</button><button class="btn pri" data-act="saveStAtt">حفظ حضور الطلاب</button></div>
+    <div class="panel" id="stAttList"></div>
+   </section>
+
+   <section class="sec" id="s-fees" hidden>
+    <div class="metrics" id="feeMetrics"></div>
+    <div class="panel">
+     <div class="ph"><h3>تسجيل دفعة من مصروفات الطالب</h3></div>
+     <p class="hint">تُحدد المصروفات الكاملة عند تسجيل الطالب. اختر الطالب هنا، ثم أدخل المبلغ الذي دفعه فقط، وسنحسب الباقي تلقائياً.</p>
+     <div class="grid">
+      <label class="w">الطالب *<select id="feeStudent"><option value="">اختر الطالب</option></select></label>
+      <div class="w" id="feeStudentSummary" aria-live="polite"></div>
+      <label>المبلغ الذي دفعه *<input id="feePaid" type="number" min="0.01" step="0.01" placeholder="مثلاً: 1500"></label>
+      <label>تاريخ الدفع<input id="feeDate" type="date"></label>
+      <label>طريقة الدفع<select id="feeMethod"><option>نقدي</option><option>تحويل بنكي</option><option>محفظة إلكترونية</option><option>أخرى</option></select></label>
+      <label>ملاحظة (اختياري)<input id="feeNote" placeholder="مثال: الدفعة الأولى"></label>
+      <div class="w"><button class="btn pri" id="saveFeeBtn" data-act="saveFee">حفظ الدفعة</button></div>
+     </div>
+    </div>
+    <div class="bar"><input class="grow" id="feeSearch" placeholder="بحث باسم الطالب"><select id="feeFilter"><option value="">كل الطلاب</option><option value="paid">مسدد بالكامل</option><option value="due">يوجد متبقي</option></select></div>
+    <div class="panel table-wrap"><table class="rt"><thead><tr><th>الطالب</th><th>المصروفات الكاملة</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="feeRows"></tbody></table></div>
+    <div class="panel"><div class="ph"><h3>سجل المدفوعات</h3></div><div id="paymentHistory"></div></div>
+   </section>
+
+   <section class="sec" id="s-alerts" hidden>
+    <div class="panel"><div class="ph"><h3>أعياد الميلاد والأقساط</h3><button class="btn sm" data-act="refreshAlerts">تحديث التنبيهات</button></div><p class="hint">تظهر تنبيهات أعياد ميلاد الطلاب والموظفين اليوم والأقساط المتأخرة أو التي تستحق خلال 7 أيام.</p><div id="alertsList"></div></div>
    </section>
 
    <section class="sec" id="s-att" hidden>
@@ -206,7 +302,7 @@ dialog::backdrop{background:rgba(10,30,20,.5)}
 
 <div id="toast" aria-live="polite"></div><div id="pa"></div>
 
-<script>setTimeout(()=>{if(!window.__ok){document.getElementById('bootMsg').textContent='تعذر تحميل مكتبات Firebase. تحقق من الاتصال بالإنترنت ثم أعد تحميل الصفحة.'}},9000)</script>
+<script>setTimeout(()=>{const b=document.getElementById('boot'),m=document.getElementById('bootMsg');if(!window.__ok&&b&&!b.hidden){m.textContent='تعذر تحميل مكتبات Firebase. تحقق من الاتصال بالإنترنت ثم أعد تحميل الصفحة.'}},9000);setTimeout(()=>{const b=document.getElementById('boot'),m=document.getElementById('bootMsg');if(b&&!b.hidden&&window.__ok&&m.textContent==='جارٍ التحميل…')m.textContent='الاتصال يستغرق وقتًا أطول من المتوقع. تحقق من الإنترنت وصلاحيات Firebase ثم أعد تحميل الصفحة.'},18000)</script>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,EmailAuthProvider,reauthenticateWithCredential,updatePassword}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -229,7 +325,7 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
 const pad=n=>String(n).padStart(2,"0"),iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,today=()=>iso(new Date());
 const L="ar-EG-u-nu-latn",num=(n,d=0)=>(+n||0).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
-const S={set:{name:"Alghars Aljadeed",currency:"EGP",overtime:1.5,permRate:.5},emps:[],mo:new Map(),last:null,edit:null,ed:null};
+const S={set:{name:"Alghars Aljadeed",currency:"EGP",overtime:1.5,permRate:.5},emps:[],students:[],classes:[],fees:[],payments:[],studentAtt:{},mo:new Map(),last:null,edit:null,ed:null,studentEdit:null};
 const money=(n,d=0)=>num(n,d)+" "+({EGP:"ج.م",USD:"$",SAR:"ر.س"}[S.set.currency]||"ج.م");
 const mLabel=m=>new Date(+m.slice(0,4),+m.slice(5)-1,1).toLocaleDateString(L,{month:"long",year:"numeric"});
 const ST={present:"حاضر",absent:"غائب",vacation:"إجازة",late:"متأخر"};
@@ -261,11 +357,13 @@ function calc(e,m){
  return{base,days:pr+lt,ab,ps,tr,bo,ins,ot,otp,pd,adv,oth,ad,ded,add,net:base-ded+add}}
 
 /* ---------- navigation ---------- */
-const T={dash:"لوحة التحكم",emp:"الموظفون",att:"تسجيل الحضور",perm:"الأذونات",pay:"الرواتب",set:"الإعدادات"};
+const T={dash:"لوحة التحكم",emp:"الموظفون والرواتب",students:"الطلاب",classes:"الفصول",satt:"حضور الطلاب",fees:"الأقساط والمصروفات",alerts:"التنبيهات",att:"تسجيل حضور الموظفين",perm:"الأذونات",pay:"الرواتب",set:"الإعدادات"};
 async function go(id){
- $$(".sec").forEach(s=>s.hidden=s.id!="s-"+id);$$(".nv").forEach(b=>b.classList.toggle("on",b.dataset.go==id));
+ $$(".sec").forEach(s=>s.hidden=s.id!=="s-"+id);
+ $$(".nv[data-go]").forEach(b=>b.classList.toggle("on",b.dataset.go===id));
+ $$(".nav-group").forEach(g=>{const active=!!g.querySelector(`[data-go="${id}"]`);g.classList.toggle("active",active);if(active)g.open=true});
  $("#title").textContent=T[id];$("#side").classList.remove("open");
- try{await({dash:rDash,emp:rEmp,att:rAtt,perm:rPerm,pay:rPay,set:rSet})[id]()}catch(e){toast("تعذر تحميل البيانات",1)}}
+ try{await({dash:rDash,emp:rEmp,students:rStudents,classes:rClasses,satt:rStudentAtt,fees:rFees,alerts:rAlerts,att:rAtt,perm:rPerm,pay:rPay,set:rSet})[id]()}catch(e){toast("تعذر تحميل البيانات",1)}}
 
 /* ---------- dashboard ---------- */
 function rDash(){
@@ -280,11 +378,101 @@ function rDash(){
  $("#attSum").innerHTML=tot?`<div class="stack">${Object.keys(c).map(k=>`<span style="width:${c[k]/tot*100}%;background:var(${col[k]})"></span>`).join("")}</div><div class="lg">${Object.keys(c).map(k=>`<span><i style="background:var(${col[k]})"></i>${ST[k]} ${c[k]}</span>`).join("")}</div>`:`<div class="empty">لا توجد سجلات حضور لهذا الشهر</div>`;
  $("#paySum").innerHTML=A.length?A.slice(0,8).map(e=>{const r=calc(e,m);return`<div class="row2"><div><span>${esc(e.name)}</span><b>${money(r.net)}</b></div><div class="bb"><i style="width:${r.base?Math.min(100,r.net/r.base*100):0}%"></i></div></div>`}).join(""):`<div class="empty">لا توجد بيانات</div>`}
 
+
+async function loadNurseryData(){
+ // The new collections may not yet be present in existing Firestore security rules.
+ // They must not block the entire payroll application from opening.
+ const names=["students","classes","studentInstallments","studentPayments","studentAttendance"];
+ const results=await Promise.allSettled(names.map(name=>getDocs(collection(db,name))));
+ const docs=results.map(r=>r.status==="fulfilled"?r.value.docs:[]);
+ const [a,b,c,d,e]=docs;
+ S.students=a.map(x=>({...x.data(),id:x.id}));S.classes=b.map(x=>({...x.data(),id:x.id}));S.fees=c.map(x=>({...x.data(),id:x.id}));S.payments=d.map(x=>({...x.data(),id:x.id}));S.studentAtt={};e.forEach(x=>{let v=x.data();S.studentAtt[v.date+"_"+v.studentId]=v.status});
+ const failures=results.map((r,i)=>r.status==="rejected"?names[i]:null).filter(Boolean);
+ const warn=$("#dataWarn");
+ if(failures.length){warn.hidden=false;warn.textContent="تعذّر الوصول إلى بعض بيانات الطلاب ("+failures.join("، ")+"). يجب منح المستخدم صلاحية القراءة والكتابة لهذه المجموعات في قواعد Firestore. وظائف الموظفين ما زالت متاحة.";}
+ else{warn.hidden=true;warn.textContent="";}
+}
+const sName=id=>S.students.find(x=>x.id===id)?.name||"طالب محذوف",cName=id=>S.classes.find(x=>x.id===id)?.name||"بدون فصل";
+const paidFor=id=>S.payments.filter(p=>p.installmentId===id).reduce((a,p)=>a+(+p.amount||0),0); // old installment records
+const studentPaid=id=>S.payments.filter(p=>p.studentId===id).reduce((n,p)=>n+(+p.amount||0),0);
+const studentBalance=x=>Math.max(0,Number((Number(x.totalFee||0)-studentPaid(x.id)).toFixed(2)));
+function balanceCards(student){const paid=studentPaid(student.id),left=studentBalance(student);return `<div class="metrics balance-metrics"><div><b>${money(student.totalFee||0,2)}</b><small>إجمالي المصروفات</small></div><div><b>${money(paid,2)}</b><small>إجمالي المدفوع</small></div><div><b>${money(left,2)}</b><small>المتبقي على الطالب</small></div></div>`}
+function fillNurserySelects(){
+ const opt=a=>a.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join("");
+ const keep=id=>$(id)?.value||"";
+ const cl=keep("#stClass"),att=keep("#stAttClass"),fee=keep("#feeStudent"),teach=keep("#clTeacher");
+ $("#stClass").innerHTML='<option value="">بدون فصل</option>'+opt(S.classes);
+ $("#stAttClass").innerHTML='<option value="">كل الفصول</option>'+opt(S.classes);
+ $("#feeStudent").innerHTML='<option value="">اختر الطالب</option>'+opt(S.students);
+ $("#clTeacher").innerHTML='<option value="">بدون معلم</option>'+opt(S.emps.filter(x=>x.status==="active"));
+ $("#stClass").value=cl;$("#stAttClass").value=att;$("#feeStudent").value=fee;$("#clTeacher").value=teach;
+}
+async function reloadNursery(){await loadNurseryData();fillNurserySelects()}
+function showStudentSummary(){const student=S.students.find(x=>x.id===S.studentEdit),box=$("#studentFinanceSummary");box.hidden=!student;box.innerHTML=student?`<h3 style="margin-bottom:10px">رصيد الطالب الحالي</h3>${balanceCards(student)}`:""}
+function rStudents(){fillNurserySelects();let q=$("#stSearch").value.toLowerCase(),f=$("#stFilter").value;let a=S.students.filter(x=>(!q||[x.name,x.guardian,x.phone].some(v=>String(v||"").toLowerCase().includes(q)))&&(!f||x.status===f));$("#studentRows").innerHTML=a.map(x=>{let paid=studentPaid(x.id),left=studentBalance(x);return `<tr><td><b>${esc(x.name)}</b><small>${esc(x.dob||"")}</small></td><td>${esc(x.guardian||"—")}<small>${esc(x.phone||"")}</small></td><td>${esc(cName(x.classId))}</td><td>${money(x.totalFee||0,2)}</td><td>${money(paid,2)}</td><td><b>${money(left,2)}</b></td><td class="acts"><button class="btn sm" data-act="editStudent" data-id="${x.id}">بيانات الطالب</button> <button class="btn sm" data-act="payStudent" data-id="${x.id}" ${left<=0?"disabled":""}>سداد</button> <button class="btn sm bad" data-act="delStudent" data-id="${x.id}">حذف</button></td></tr>`}).join("")||'<tr><td colspan="7" class="empty">لا توجد نتائج.</td></tr>';showStudentSummary()}
+function clearStudent(){S.studentEdit=null;["stName","stDob","stGuardian","stPhone","stEnroll","stEmergency","stMedical","stNotes"].forEach(i=>$("#"+i).value="");$("#stFee").value="";$("#stClass").value="";$("#stStatus").value="active";showStudentSummary()}
+function editStudent(id){let x=S.students.find(a=>a.id===id);if(!x)return;S.studentEdit=id;let m={stName:"name",stDob:"dob",stGuardian:"guardian",stPhone:"phone",stClass:"classId",stEnroll:"enrollDate",stFee:"totalFee",stStatus:"status",stEmergency:"emergency",stMedical:"medical",stNotes:"notes"};Object.entries(m).forEach(([a,b])=>$("#"+a).value=x[b]??"");showStudentSummary();window.scrollTo({top:0,behavior:"smooth"})}
+async function saveStudent(){
+ const raw=$("#stFee").value.trim(),tuition=Number(raw),name=$("#stName").value.trim();
+ if(!name)return toast("اسم الطالب مطلوب",1);
+ if(raw===""||!Number.isFinite(tuition)||tuition<0)return toast("أدخل إجمالي المصروفات الدراسية عند التسجيل",1);
+ if(S.studentEdit&&tuition+0.001<studentPaid(S.studentEdit))return toast("لا يمكن جعل المصروفات أقل من إجمالي المبالغ المدفوعة",1);
+ let v={name,dob:$("#stDob").value,guardian:$("#stGuardian").value.trim(),phone:$("#stPhone").value.trim(),classId:$("#stClass").value,enrollDate:$("#stEnroll").value,totalFee:tuition,status:$("#stStatus").value,emergency:$("#stEmergency").value,medical:$("#stMedical").value,notes:$("#stNotes").value,updatedAt:new Date().toISOString()};
+ let id=S.studentEdit||doc(collection(db,"students")).id;
+ try{await setDoc(doc(db,"students",id),v,{merge:true});clearStudent();await reloadNursery();rStudents();toast("تم حفظ الطالب وإجمالي مصروفاته")}
+ catch(e){toast("تعذر الحفظ ("+e.code+")",1)}
+}
+async function delStudent(id){let x=S.students.find(a=>a.id===id);if(!x)return;if(S.payments.some(p=>p.studentId===id))return toast("لا يمكن حذف طالب له مدفوعات مسجلة؛ اجعله غير نشط للحفاظ على السجل المالي",1);if(!confirm("حذف ملف الطالب "+x.name+"؟"))return;try{await deleteDoc(doc(db,"students",id));await reloadNursery();rStudents();toast("تم حذف الطالب")}catch(e){toast("تعذر الحذف",1)}}
+
+async function rClasses(){fillNurserySelects();$("#classRows").innerHTML=S.classes.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.age||"—")}</td><td>${esc(S.emps.find(e=>e.id===c.teacherId)?.name||"—")}</td><td>${S.students.filter(s=>s.classId===c.id&&s.status==="active").length} / ${c.capacity||0}</td><td>${esc(c.year||"—")}</td><td><button class="btn sm bad" data-act="delClass" data-id="${c.id}">حذف</button></td></tr>`).join("")||'<tr><td colspan="6" class="empty">لا توجد فصول بعد.</td></tr>'}
+async function saveClass(){let name=$("#clName").value.trim();if(!name)return toast("اسم الفصل مطلوب",1);let id=doc(collection(db,"classes")).id;try{await setDoc(doc(db,"classes",id),{name,age:$("#clAge").value,capacity:+$("#clCapacity").value||20,teacherId:$("#clTeacher").value,year:$("#clYear").value,notes:$("#clNotes").value,createdAt:new Date().toISOString()});["clName","clAge","clYear","clNotes"].forEach(i=>$("#"+i).value="");await reloadNursery();rClasses();toast("تم حفظ الفصل")}catch(e){toast("تعذر حفظ الفصل",1)}}
+async function delClass(id){if(S.students.some(s=>s.classId===id))return toast("انقل الطلاب من الفصل أولاً",1);if(!confirm("حذف الفصل؟"))return;await deleteDoc(doc(db,"classes",id));await reloadNursery();rClasses()}
+async function rStudentAtt(){await reloadNursery();let date=$("#stAttDate").value||today(),cl=$("#stAttClass").value;$("#stAttList").innerHTML=S.students.filter(s=>s.status==="active"&&(!cl||s.classId===cl)).map(s=>{let st=S.studentAtt[date+"_"+s.id]||"present";return `<div class="arow" data-sid="${s.id}"><div><b>${esc(s.name)}</b><small>${esc(cName(s.classId))}</small></div><div class="seg">${[["present","حاضر"],["absent","غائب"],["late","متأخر"],["excused","بعذر"]].map(([v,l])=>`<button data-st="${v}" class="${st===v?"on":""}">${l}</button>`).join("")}</div></div>`}).join("")||'<div class="empty">لا يوجد طلاب نشطون.</div>'}
+async function saveStAtt(){let date=$("#stAttDate").value||today();try{let b=writeBatch(db);$$("#stAttList .arow").forEach(r=>{let status=r.querySelector(".on")?.dataset.st||"present",studentId=r.dataset.sid;b.set(doc(db,"studentAttendance",date+"_"+studentId),{date,month:date.slice(0,7),studentId,status},{merge:true});S.studentAtt[date+"_"+studentId]=status});await b.commit();toast("تم حفظ حضور الطلاب")}catch(e){toast("تعذر حفظ الحضور",1)}}
+function showFeeStudentSummary(){
+ const x=S.students.find(s=>s.id===$("#feeStudent").value),box=$("#feeStudentSummary"),b=$("#saveFeeBtn");
+ box.innerHTML=x?balanceCards(x):'<p class="hint">اختر طالباً لعرض إجمالي المصروفات والمدفوع والمتبقي.</p>';
+ b.disabled=!x||studentBalance(x)<=0;
+ if(x&&studentBalance(x)<=0)box.innerHTML+='<p class="hint">تم سداد مصروفات هذا الطالب بالكامل.</p>';
+}
+async function saveFee(){
+ const studentId=$("#feeStudent").value,x=S.students.find(s=>s.id===studentId),raw=$("#feePaid").value.trim(),amount=Number(raw);
+ if(!x)return toast("اختر الطالب أولاً",1);
+ if(raw===""||!Number.isFinite(amount)||amount<=0)return toast("اكتب مبلغ الدفعة بشكل صحيح",1);
+ if(Math.round(amount*100)/100!==amount)return toast("اكتب مبلغاً حتى خانتين عشريتين",1);
+ if(amount>studentBalance(x)+0.001)return toast("المبلغ أكبر من المتبقي على الطالب: "+money(studentBalance(x),2),1);
+ const btn=$("#saveFeeBtn");btn.disabled=true;
+ try{
+  // Recheck payments from Firebase before writing, to prevent a stale tab from overpaying.
+  const fresh=await getDocs(collection(db,"studentPayments"));
+  const paid=fresh.docs.reduce((n,p)=>n+(p.data().studentId===studentId?(+p.data().amount||0):0),0);
+  const remain=Math.max(0,Number((Number(x.totalFee||0)-paid).toFixed(2)));
+  if(amount>remain+0.001){await reloadNursery();rFees();return toast("تم تسجيل دفعة أخرى بالفعل؛ المتبقي الآن: "+money(remain,2),1)}
+  const id=doc(collection(db,"studentPayments")).id;
+  await setDoc(doc(db,"studentPayments",id),{studentId,amount,date:$("#feeDate").value||today(),method:$("#feeMethod").value,note:$("#feeNote").value.trim(),label:"دفعة مصروفات",createdAt:new Date().toISOString()});
+  $("#feePaid").value="";$("#feeNote").value="";
+  await reloadNursery();rFees();toast("تم حفظ الدفعة وتحديث رصيد الطالب")
+ }catch(e){toast("تعذر تسجيل الدفعة ("+(e.code||"خطأ")+")",1)}
+ finally{showFeeStudentSummary()}
+}
+function rFees(){
+ fillNurserySelects();const q=$("#feeSearch").value.toLowerCase(),filter=$("#feeFilter").value;
+ const rows=S.students.filter(x=>(!q||[x.name,x.guardian,x.phone].some(v=>String(v||"").toLowerCase().includes(q)))&&(!filter||(filter==="paid"&&studentBalance(x)===0)||(filter==="due"&&studentBalance(x)>0)));
+ const total=S.students.reduce((n,x)=>n+(+x.totalFee||0),0),paid=S.students.reduce((n,x)=>n+studentPaid(x.id),0),left=S.students.reduce((n,x)=>n+studentBalance(x),0);
+ $("#feeMetrics").innerHTML=[["إجمالي مصروفات الطلاب",money(total,2)],["إجمالي المدفوع",money(paid,2)],["إجمالي المتبقي",money(left,2)],["طلاب لديهم متبقي",S.students.filter(x=>studentBalance(x)>0).length]].map(([a,b])=>`<div><b style="font-size:20px">${b}</b><small>${a}</small></div>`).join("");
+ $("#feeRows").innerHTML=rows.map(x=>{let paid=studentPaid(x.id),left=studentBalance(x);return `<tr><td><b>${esc(x.name)}</b><small>${esc(cName(x.classId))}</small></td><td>${money(x.totalFee||0,2)}</td><td>${money(paid,2)}</td><td><b>${money(left,2)}</b></td><td><span class="pill ${left?"g":""}">${left?"يوجد متبقي":"مدفوع بالكامل"}</span></td><td><button class="btn sm" data-act="payStudent" data-id="${x.id}" ${left<=0?"disabled":""}>سداد</button></td></tr>`}).join("")||'<tr><td colspan="6" class="empty">لا توجد نتائج.</td></tr>';
+ $("#paymentHistory").innerHTML=S.payments.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||"").localeCompare(a.createdAt||"")).map(p=>`<div class="arow"><div><b>${esc(sName(p.studentId))} · ${esc(p.note||p.label||"دفعة مصروفات")}</b><small>${esc(p.date||"")} · ${esc(p.method||"")}</small></div><b>${money(p.amount,2)}</b></div>`).join("")||'<div class="empty">لا توجد دفعات.</div>';
+ showFeeStudentSummary();
+}
+function payStudent(id){if(!S.students.some(x=>x.id===id))return;go("fees");$("#feeStudent").value=id;showFeeStudentSummary();$("#feePaid").focus()}
+function getAlerts(){let a=[],t=today(),md=t.slice(5);S.students.filter(s=>s.status==="active"&&s.dob&&s.dob.slice(5)===md).forEach(s=>a.push(["🎂","عيد ميلاد الطالب: "+s.name,"تاريخ الميلاد "+s.dob]));S.emps.filter(s=>s.status==="active"&&s.dob&&s.dob.slice(5)===md).forEach(s=>a.push(["🎂","عيد ميلاد الموظف: "+s.name,"تاريخ الميلاد "+s.dob]));S.fees.forEach(f=>{let left=(+f.expected||0)-paidFor(f.id);if(left>0&&f.dueDate&&f.dueDate<t)a.push(["⚠️","قسط متأخر: "+sName(f.studentId),f.label+" · المتبقي "+money(left,2)]);else if(left>0&&f.dueDate&&f.dueDate>=t&&(new Date(f.dueDate)-new Date(t))/86400000<=7)a.push(["💳","موعد قسط قريب: "+sName(f.studentId),f.label+" · "+f.dueDate])});return a}
+function rAlerts(){let a=getAlerts();$("#alertsList").innerHTML=a.map(x=>`<div class="arow"><div class="nm"><i class="av">${x[0]}</i><div><b>${esc(x[1])}</b><small>${esc(x[2])}</small></div></div></div>`).join("")||'<div class="empty">لا توجد تنبيهات حالياً.</div>'}
+
 /* ---------- employees ---------- */
 const OPT=a=>a.map(v=>[v,v]);
 const F=[["name","الاسم الكامل *"],["jobTitle","المسمى الوظيفي *"],["dept","القسم","sel",OPT(["إدارة","تعليم","رعاية","صيانة","أخرى"])],["status","الحالة","sel",[["active","نشط"],["inactive","غير نشط"]]],
  ["salary","الراتب الأساسي الشهري *","number"],["transport","بدل المواصلات","number"],["bonus","بدل ثابت","number"],["insurance","التأمين","number"],
- ["phone","الهاتف","tel"],["emergency","هاتف الطوارئ","tel"],["nationalId","الرقم القومي"],["hireDate","تاريخ التعيين","date"],["gender","الجنس","sel",OPT(["أنثى","ذكر"])],["bank","الحساب البنكي"],["address","العنوان"]];
+ ["phone","الهاتف","tel"],["emergency","هاتف الطوارئ","tel"],["nationalId","الرقم القومي"],["dob","تاريخ الميلاد","date"],["hireDate","تاريخ التعيين","date"],["gender","الجنس","sel",OPT(["أنثى","ذكر"])],["bank","الحساب البنكي"],["address","العنوان"]];
 const form=(id,fs)=>$(id).innerHTML=fs.map(([k,l,t,o])=>`<label>${l}${t=="sel"?`<select data-k="${k}">${o.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select>`:`<input data-k="${k}" type="${t||"text"}"${t=="number"?' step="any" min="0"':""}>`}</label>`).join("");
 const vals=id=>Object.fromEntries($$(id+" [data-k]").map(i=>[i.dataset.k,i.type=="number"?(parseFloat(i.value)||0):i.value.trim()]));
 const fill=(id,o)=>$$(id+" [data-k]").forEach(i=>i.value=o[i.dataset.k]??(i.type=="number"?0:i.tagName=="SELECT"?i.options[0].value:""));
@@ -359,7 +547,7 @@ async function savePw(){const a=$("#pw0").value,n=$("#pw1").value;
 /* ---------- events ---------- */
 const A={
  menu:()=>$("#side").classList.toggle("open"),out:()=>signOut(auth),closeD:b=>b.closest("dialog").close(),
- addEmp:()=>{go("emp");openEmp(null)},editEmp:b=>openEmp(b.dataset.id),delEmp:b=>delEmp(b.dataset.id),saveEmp,
+ addEmp:()=>{go("emp");openEmp(null)},saveStudent,clearStudent,editStudent:b=>editStudent(b.dataset.id),delStudent:b=>delStudent(b.dataset.id),saveClass,delClass:b=>delClass(b.dataset.id),saveFee,payStudent:b=>payStudent(b.dataset.id),refreshAlerts:rAlerts,stAttAll:()=>$$("#stAttList .arow").forEach(r=>r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.st==="present"))),saveStAtt,editEmp:b=>openEmp(b.dataset.id),delEmp:b=>delEmp(b.dataset.id),saveEmp,
  att:b=>{setAtt(b.dataset.id,b.dataset.s);const r=b.closest(".arow");r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x==b));r.querySelector("small").textContent=S.emps.find(e=>e.id==b.dataset.id).jobTitle+" · محفوظ"},
  attAll:()=>$$("#al .arow").forEach(r=>r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.s=="present"))),attSave,permSave,
  payEdit:b=>payEdit(b.dataset.id),saveEdit,snap,
@@ -370,8 +558,11 @@ const A={
 document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g)return go(g.dataset.go);const a=e.target.closest("[data-act]");if(a)A[a.dataset.act]?.(a)});
 $$("dialog").forEach(d=>d.addEventListener("click",e=>{if(e.target==d)d.close()}));
 ["eq","ed","es"].forEach(i=>$("#"+i).addEventListener("input",rEmp));
+["stSearch","stFilter"].forEach(i=>$("#"+i)?.addEventListener("input",rStudents));["feeSearch","feeFilter"].forEach(i=>$("#"+i)?.addEventListener("input",rFees));
+$("#stAttList").addEventListener("click",e=>{let b=e.target.closest("[data-st]");if(b)b.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b))});
+$("#feeStudent").onchange=showFeeStudentSummary;$("#stAttDate").onchange=rStudentAtt;$("#stAttClass").onchange=rStudentAtt;
 $("#aDate").onchange=rAtt;$("#pDate").onchange=rPerm;$("#pMonth").onchange=rPay;
-form("#eForm",F);$("#aDate").value=$("#pDate").value=today();
+form("#eForm",F);$("#aDate").value=$("#pDate").value=$("#stAttDate").value=$("#feeDate").value=today();showFeeStudentSummary();
 {const n=new Date();$("#pMonth").innerHTML=Array.from({length:12},(_,i)=>{const d=new Date(n.getFullYear(),n.getMonth()-i,1),v=d.getFullYear()+"-"+pad(d.getMonth()+1);return`<option value="${v}">${mLabel(v)}</option>`}).join("")}
 
 /* ---------- auth + startup ---------- */
@@ -385,7 +576,7 @@ else onAuthStateChanged(auth,async u=>{
  if(!u){$("#lp").value="";return show("login")}
  $("#uName").textContent=u.email.split("@")[0];
  try{const[s,mt,es]=await Promise.all([getDoc(doc(db,"settings","main")),getDoc(doc(db,"meta","app")),getDocs(collection(db,"employees")),loadMonth(today().slice(0,7))]);
-  if(s.exists())S.set={...S.set,...s.data()};S.last=mt.data()?.lastAttendanceDate||null;S.emps=es.docs.map(d=>({...d.data(),id:d.id}));
+  if(s.exists())S.set={...S.set,...s.data()};S.last=mt.data()?.lastAttendanceDate||null;S.emps=es.docs.map(d=>({...d.data(),id:d.id}));await loadNurseryData();fillNurserySelects();
   $("#sName").textContent=S.set.name;show("app");go("dash")}
  catch(e){$("#bootMsg").textContent="تعذر قراءة البيانات ("+(e.code||"خطأ")+"). تأكد من قواعد Firestore ثم أعد المحاولة.";$("#boot").hidden=0}});
 </script>

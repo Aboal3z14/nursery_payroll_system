@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12301F">
+<title>الغرس الجديد | الحضور والرواتب</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232E8B57'/%3E%3Cpath d='M16 25V14m0 0c0-4 3-6 7-6 0 4-3 6-7 6zm0 3c0-3-2-5-6-5 0 3 2 5 6 5z' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<style>
+:root{--ink:#12301F;--mut:#5E7066;--bg:#F1F4F1;--sf:#fff;--ln:#DDE4DF;--lf:#2E8B57;--lf2:#1F6B41;--lt:#E3F2EA;--sun:#E8A43A;--red:#C94A3F;--sky:#3A78C9}
+*{box-sizing:border-box;margin:0}[hidden]{display:none!important}
+body{font:15px/1.6 'IBM Plex Sans Arabic','Segoe UI',Tahoma,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:2px solid var(--lf);outline-offset:2px}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+small{color:var(--mut);font-size:12px;display:block}
+/* controls */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border:1px solid var(--ln);background:var(--sf);border-radius:10px;font-weight:600;font-size:14px}
+.btn:hover{background:var(--lt)}.btn:disabled{opacity:.5;cursor:default}
+.btn.pri{background:var(--lf);border-color:var(--lf);color:#fff}.btn.pri:hover{background:var(--lf2)}
+.btn.bad{color:var(--red)}.btn.sm{padding:6px 10px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--ln);border-radius:10px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lf);box-shadow:0 0 0 3px var(--lt)}
+label{display:block;font-size:13px;font-weight:600;color:var(--mut)}label>input,label>select,label>textarea{margin-top:5px;color:var(--ink);font-weight:400}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid .w{grid-column:1/-1}
+/* boot + login */
+#boot{position:fixed;inset:0;z-index:50;background:var(--ink);color:#fff;display:grid;place-content:center;justify-items:center;gap:12px}
+#boot .ic{width:44px;height:44px;color:#7DD3A0}
+#login{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.brand{background:var(--ink);color:#fff;padding:56px;display:flex;flex-direction:column;justify-content:space-between}
+.brand h1{font-size:clamp(40px,6vw,76px);line-height:1.1;font-weight:700}
+.brand p{color:#A9C4B5;max-width:30ch;font-size:18px}
+.brand .ic{width:40px;height:40px;color:#7DD3A0}
+.lform{display:grid;place-content:center;padding:32px}
+.lform form{width:min(360px,100%);display:grid;gap:16px}.lform h2{font-size:24px}
+.err{color:var(--red);font-size:13px;min-height:20px}.warn{background:#FDF1DB;border:1px solid var(--sun);padding:10px 12px;border-radius:10px;font-size:13px}
+/* shell */
+#side{position:fixed;inset:0 0 0 auto;width:232px;background:var(--ink);color:#fff;display:flex;flex-direction:column;padding:20px 12px;z-index:30;transition:transform .2s}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 10px 22px;font-weight:700;font-size:17px}.logo .ic{color:#7DD3A0;width:26px;height:26px}
+.nv{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:0;background:none;color:#B9D0C2;border-radius:10px;font-size:14px;font-weight:500;text-align:right}
+.nv:hover{background:#1C4531;color:#fff}.nv.on{background:var(--lf);color:#fff}
+.me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid #24503B;font-size:13px}.me button{margin-right:auto;background:none;border:0;color:#B9D0C2}
+.shell{margin-right:232px}
+.top{display:flex;align-items:center;gap:12px;padding:22px 32px 0}.top h1{font-size:22px}.menu{display:none}
+.main{padding:20px 32px 48px;max-width:1180px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}.bar input,.bar select{width:auto;min-width:150px}.bar .grow{flex:1;min-width:200px}
+.panel{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:20px;margin-bottom:16px}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.ph h3{font-size:16px}
+/* dashboard */
+.today{background:var(--lt);border-color:#C5E3D1}
+.today h2{font-size:clamp(26px,4vw,40px);line-height:1.2}.today p{color:var(--lf2);font-weight:500;margin:4px 0 16px}
+.th{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.tags{display:flex;gap:10px;flex-wrap:wrap}
+.tag{display:flex;align-items:center;gap:10px;background:#fff;border-radius:40px;padding:6px 16px 6px 8px;min-width:150px}.tag b{font-size:14px;display:block;line-height:1.2}
+.av{width:36px;height:36px;border-radius:50%;background:var(--lt);color:var(--lf2);display:grid;place-items:center;font-weight:700;font-style:normal;flex:none;box-shadow:0 0 0 3px var(--rc,var(--ln))}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);background:var(--sf);border:1px solid var(--ln);border-radius:14px;margin-bottom:16px}
+.metrics div{padding:18px 20px;border-inline-start:1px solid var(--ln)}.metrics div:first-child{border:0}
+.metrics b{font-size:28px;display:block;line-height:1.2}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.stack{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--bg);margin-bottom:12px}
+.lg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}.lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:6px}
+.row2{margin-bottom:12px}.row2>div{display:flex;justify-content:space-between;font-size:14px}.row2 .bb{height:6px;background:var(--bg);border-radius:3px;margin-top:5px}.row2 .bb i{display:block;height:100%;background:var(--lf);border-radius:3px}
+/* status colours */
+.s-present{--rc:var(--lf);--c:var(--lf)}.s-absent{--rc:var(--red);--c:var(--red)}.s-vacation{--rc:var(--sky);--c:var(--sky)}.s-late{--rc:var(--sun);--c:var(--sun)}
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:14px}th{font-size:12px;color:var(--mut);font-weight:600}
+th,td{padding:12px 10px;text-align:right;border-bottom:1px solid var(--ln)}tr:last-child td{border:0}
+td.n,th.n{font-variant-numeric:tabular-nums}.nm{display:flex;align-items:center;gap:10px}
+.pill{padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;background:var(--lt);color:var(--lf2)}.pill.g{background:#EEE;color:#666}
+.acts{white-space:nowrap;text-align:left}
+.empty{text-align:center;color:var(--mut);padding:36px 12px}
+/* attendance */
+.arow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--ln)}.arow:last-child{border:0}
+.seg{display:flex;gap:6px}.seg button{padding:7px 14px;border-radius:9px;border:1px solid var(--ln);background:#fff;font-size:13px;font-weight:600;color:var(--c)}
+.seg button.on{background:var(--c);border-color:var(--c);color:#fff}
+.prow{display:flex;gap:10px}.prow label{width:96px}
+/* dialog */
+dialog{border:0;border-radius:16px;padding:0;width:min(640px,94vw);max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(10,30,20,.5)}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--ln)}.dh h2{font-size:18px}
+.db{padding:20px 22px}.df{padding:14px 22px;border-top:1px solid var(--ln);display:flex;justify-content:flex-end;gap:10px}
+.slip{border:1px solid var(--ln);border-radius:12px;padding:24px}.slip h3{font-size:20px}.slip .r{display:flex;justify-content:space-between;padding:6px 0;font-size:14px}
+.slip h4{margin:16px 0 4px;font-size:13px;color:var(--mut);border-top:1px solid var(--ln);padding-top:12px}.slip .t{font-size:18px;font-weight:700;border-top:2px solid var(--ink);margin-top:12px;padding-top:10px}
+#toast{position:fixed;bottom:20px;left:20px;z-index:99;display:grid;gap:8px}
+#toast div{background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;animation:ti .2s}#toast .e{background:var(--red)}
+@keyframes ti{from{opacity:0;transform:translateY(8px)}}
+#pa{display:none}
+@media(max-width:900px){#side{transform:translateX(100%)}#side.open{transform:none}.shell{margin:0}.menu{display:grid}.top,.main{padding-inline:16px}
+ #login{grid-template-columns:1fr}.brand{padding:28px;gap:40px}.metrics,.two{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}
+ .grid{grid-template-columns:1fr}.arow{flex-direction:column;align-items:stretch}.seg button{flex:1}
+ .rt thead{display:none}.rt tr{display:block;border-bottom:1px solid var(--ln);padding:8px 0}.rt td{display:flex;justify-content:space-between;border:0;padding:5px 4px}.rt td[data-l]::before{content:attr(data-l);color:var(--mut);font-size:12px}.acts{justify-content:flex-end}}
+@media print{body.pr>*:not(#pa){display:none!important}body.pr #pa{display:block;padding:24px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21V11M12 11c0-4 3-6 7-6 0 4-3 6-7 6zM12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></symbol>
+<symbol id="i-dash" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="m9 16 2 2 4-4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-pay" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+<symbol id="i-set" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+</defs></svg>
+
+<div id="boot"><svg class="ic"><use href="#i-sprout"/></svg><p id="bootMsg">جارٍ التحميل…</p></div>
+
+<div id="login" hidden>
+ <section class="brand"><svg class="ic"><use href="#i-sprout"/></svg><div><h1>الغرس<br>الجديد</h1></div><p>الحضور والأذونات والرواتب لفريق الحضانة، في مكان واحد.</p></section>
+ <section class="lform"><form id="lf">
+  <h2>تسجيل الدخول</h2>
+  <div class="warn" id="cfgWarn" hidden>لم يتم ربط Firebase بعد. افتح الملف وضع إعدادات مشروعك في <b>firebaseConfig</b> أعلى السكربت.</div>
+  <label>اسم المستخدم<input id="lu" autocomplete="username" autocapitalize="none" required></label>
+  <label>كلمة المرور<input id="lp" type="password" autocomplete="current-password" required></label>
+  <div class="err" id="le" role="alert"></div>
+  <button class="btn pri" id="lb" style="justify-content:center">دخول</button>
+ </form></section>
+</div>
+
+<div id="app" hidden>
+ <aside id="side">
+  <div class="logo"><svg class="ic"><use href="#i-sprout"/></svg><span id="sName">الغرس الجديد</span></div>
+  <nav>
+   <button class="nv on" data-go="dash"><svg class="ic"><use href="#i-dash"/></svg>لوحة التحكم</button>
+   <button class="nv" data-go="emp"><svg class="ic"><use href="#i-users"/></svg>الموظفون</button>
+   <button class="nv" data-go="att"><svg class="ic"><use href="#i-cal"/></svg>الحضور</button>
+   <button class="nv" data-go="perm"><svg class="ic"><use href="#i-clock"/></svg>الأذونات</button>
+   <button class="nv" data-go="pay"><svg class="ic"><use href="#i-pay"/></svg>الرواتب</button>
+   <button class="nv" data-go="set"><svg class="ic"><use href="#i-set"/></svg>الإعدادات</button>
+  </nav>
+  <div class="me"><span id="uName"></span><button data-act="out" aria-label="تسجيل الخروج"><svg class="ic"><use href="#i-out"/></svg></button></div>
+ </aside>
+ <div class="shell">
+  <header class="top"><button class="btn menu sm" data-act="menu" aria-label="القائمة"><svg class="ic"><use href="#i-menu"/></svg></button><h1 id="title"></h1></header>
+  <div class="main">
+
+   <section class="sec" id="s-dash">
+    <div class="panel today">
+     <div class="th"><div><h2 id="tDate"></h2><p id="tProg"></p></div>
+      <div class="bar" style="margin:0"><button class="btn pri" data-go="att">تسجيل الحضور</button><button class="btn" data-act="addEmp">إضافة موظف</button></div></div>
+     <div class="tags" id="tags"></div>
+    </div>
+    <div class="metrics" id="metrics"></div>
+    <div class="two">
+     <div class="panel"><div class="ph"><h3>حضور هذا الشهر</h3></div><div id="attSum"></div></div>
+     <div class="panel"><div class="ph"><h3>صافي رواتب الشهر</h3></div><div id="paySum"></div></div>
+    </div>
+   </section>
+
+   <section class="sec" id="s-emp" hidden>
+    <div class="bar"><input class="grow" id="eq" placeholder="ابحث باسم الموظف"><select id="ed"><option value="">كل الأقسام</option><option>إدارة</option><option>تعليم</option><option>رعاية</option><option>صيانة</option><option>أخرى</option></select>
+     <select id="es"><option value="">كل الحالات</option><option value="active">نشط</option><option value="inactive">غير نشط</option></select>
+     <button class="btn pri" data-act="addEmp"><svg class="ic"><use href="#i-plus"/></svg>إضافة موظف</button></div>
+    <div class="panel"><table class="rt"><thead><tr><th>الموظف</th><th>القسم</th><th>الراتب</th><th>الحالة</th><th></th></tr></thead><tbody id="eb"></tbody></table></div>
+   </section>
+
+   <section class="sec" id="s-att" hidden>
+    <div class="bar"><input type="date" id="aDate"><button class="btn" data-act="attAll">الكل حاضر</button><button class="btn pri" data-act="attSave">حفظ الحضور</button></div>
+    <div class="panel" id="al"></div>
+   </section>
+
+   <section class="sec" id="s-perm" hidden>
+    <div class="bar"><input type="date" id="pDate"><button class="btn pri" data-act="permSave">حفظ الأذونات</button></div>
+    <div class="panel" id="pl"></div>
+   </section>
+
+   <section class="sec" id="s-pay" hidden>
+    <div class="bar"><select id="pMonth"></select><button class="btn" data-act="snap">حفظ حساب الشهر</button><button class="btn" data-act="printPay"><svg class="ic"><use href="#i-print"/></svg>طباعة</button></div>
+    <div class="panel"><table class="rt"><thead><tr><th>الموظف</th><th>الأساسي</th><th>أيام العمل</th><th>الغياب</th><th>ساعات الإذن</th><th>الصافي</th><th></th></tr></thead><tbody id="pb"></tbody></table></div>
+   </section>
+
+   <section class="sec" id="s-set" hidden>
+    <div class="panel"><div class="ph"><h3>بيانات الحضانة والرواتب</h3></div>
+     <div class="grid">
+      <label>اسم الحضانة<input id="sn"></label>
+      <label>العملة<select id="sc"><option value="EGP">جنيه مصري</option><option value="SAR">ريال سعودي</option><option value="USD">دولار</option></select></label>
+      <label>مضاعف الساعة الإضافية<input id="so" type="number" step="0.1"></label>
+      <label>مضاعف خصم ساعة الإذن<input id="sp" type="number" step="0.1"></label>
+      <div class="w"><button class="btn pri" data-act="saveSet">حفظ الإعدادات</button></div>
+     </div></div>
+    <div class="panel"><div class="ph"><h3>تغيير كلمة المرور</h3></div>
+     <div class="grid">
+      <label class="w">كلمة المرور الحالية<input id="pw0" type="password" autocomplete="current-password"></label>
+      <label>الجديدة (8 أحرف على الأقل)<input id="pw1" type="password" autocomplete="new-password"></label>
+      <label>تأكيد الجديدة<input id="pw2" type="password" autocomplete="new-password"></label>
+      <div class="w"><button class="btn pri" data-act="savePw">تغيير كلمة المرور</button></div>
+     </div></div>
+   </section>
+  </div>
+ </div>
+</div>
+
+<dialog id="dEmp"><div class="dh"><h2 id="dEmpT"></h2><button class="btn sm" data-act="closeD">إغلاق</button></div><div class="db"><div class="grid" id="eForm"></div></div>
+ <div class="df"><button class="btn" data-act="closeD">إلغاء</button><button class="btn pri" data-act="saveEmp">حفظ</button></div></dialog>
+<dialog id="dEdit"><div class="dh"><h2 id="dEditT"></h2><button class="btn sm" data-act="closeD">إغلاق</button></div><div class="db"><div class="grid" id="edForm"></div></div>
+ <div class="df"><button class="btn" data-act="closeD">إلغاء</button><button class="btn pri" data-act="saveEdit">حفظ التعديلات</button></div></dialog>
+<dialog id="dSlip"><div class="dh"><h2>قسيمة الراتب</h2><button class="btn sm" data-act="closeD">إغلاق</button></div><div class="db" id="slipB"></div>
+ <div class="df"><button class="btn pri" data-act="printSlip"><svg class="ic"><use href="#i-print"/></svg>طباعة</button></div></dialog>
+
+<div id="toast" aria-live="polite"></div><div id="pa"></div>
+
+<script>setTimeout(()=>{if(!window.__ok){document.getElementById('bootMsg').textContent='تعذر تحميل مكتبات Firebase. تحقق من الاتصال بالإنترنت ثم أعد تحميل الصفحة.'}},9000)</script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,EmailAuthProvider,reauthenticateWithCredential,updatePassword}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,getDocs,getDoc,setDoc,deleteDoc,query,where,writeBatch}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+window.__ok=1;
+
+/* ============ 1) PASTE YOUR FIREBASE SETTINGS HERE ============ */
+const firebaseConfig={
+  apiKey:"AIzaSyDCqBeoZlMPp0uLO8ORwYUC8VciCfwjkIQ",
+  authDomain:"alghars-attendance.firebaseapp.com",
+  projectId:"alghars-attendance",
+  storageBucket:"alghars-attendance.firebasestorage.app",
+  messagingSenderId:"942682421485",
+  appId:"1:942682421485:web:4abe3ffc13d6d38fb7f4e4"
+};
+const DOMAIN="alghars.app"; // username "admin" => admin@alghars.app in Firebase Authentication
+/* ================================================================ */
+
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
+const pad=n=>String(n).padStart(2,"0"),iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,today=()=>iso(new Date());
+const L="ar-EG-u-nu-latn",num=(n,d=0)=>(+n||0).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const S={set:{name:"Alghars Aljadeed",currency:"EGP",overtime:1.5,permRate:.5},emps:[],mo:new Map(),last:null,edit:null,ed:null};
+const money=(n,d=0)=>num(n,d)+" "+({EGP:"ج.م",USD:"$",SAR:"ر.س"}[S.set.currency]||"ج.م");
+const mLabel=m=>new Date(+m.slice(0,4),+m.slice(5)-1,1).toLocaleDateString(L,{month:"long",year:"numeric"});
+const ST={present:"حاضر",absent:"غائب",vacation:"إجازة",late:"متأخر"};
+const av=(n,st)=>`<i class="av ${st?"s-"+st:""}">${esc([...String(n)][0]||"؟")}</i>`;
+const M=m=>S.mo.get(m)||{att:{},perm:{},pay:{}};
+function toast(t,bad){const d=document.createElement("div");d.textContent=t;if(bad)d.className="e";$("#toast").append(d);setTimeout(()=>d.remove(),3500)}
+
+const ok=!firebaseConfig.apiKey.startsWith("PASTE");let auth,db;
+if(ok){const app=initializeApp(firebaseConfig);auth=getAuth(app);
+ try{db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})})}catch(e){db=initializeFirestore(app,{})}}
+const W=(c,id,data)=>setDoc(doc(db,c,id),data,{merge:true}).catch(e=>toast("تعذر الحفظ ("+e.code+")",1));
+
+async function loadMonth(m){
+ if(S.mo.has(m))return S.mo.get(m);
+ const r=await Promise.all(["attendance","permissions","payroll"].map(c=>getDocs(query(collection(db,c),where("month","==",m)))));
+ const o={att:{},perm:{},pay:{}};
+ r.forEach((s,i)=>s.forEach(d=>{const x=d.data(),k=m+"-"+x.empId;if(i==0)o.att[k]=x.days||{};else if(i==1)o.perm[k]=x.days||{};else o.pay[k]=x}));
+ S.mo.set(m,o);return o}
+
+/* payroll maths: same rules as the original system */
+function calc(e,m){
+ const o=M(m),k=m+"-"+e.id,a=o.att[k]||{},p=o.perm[k]||{},x=(o.pay[k]||{}).edits||{};
+ let pr=0,ab=0,lt=0,ph=0,pm=0;
+ for(const s of Object.values(a)){if(s=="present")pr++;else if(s=="absent")ab++;else if(s=="late")lt++}
+ for(const v of Object.values(p)){ph+=v.hours||0;pm+=v.minutes||0}
+ const ps=ph+pm/60,base=+e.salary||0,day=base/30,hr=day/8,g=(f,d)=>x[f]!==undefined?x[f]:(d||0);
+ const tr=g("transport",e.transport),bo=g("bonus",e.bonus),ins=g("insurance",e.insurance),ot=x.overtimeHours||0,adv=x.advance||0,oth=x.otherDeductions||0;
+ const otp=ot*hr*S.set.overtime,pd=ps*hr*S.set.permRate,ad=ab*day,ded=ad+pd+ins+adv+oth,add=tr+bo+otp;
+ return{base,days:pr+lt,ab,ps,tr,bo,ins,ot,otp,pd,adv,oth,ad,ded,add,net:base-ded+add}}
+
+/* ---------- navigation ---------- */
+const T={dash:"لوحة التحكم",emp:"الموظفون",att:"تسجيل الحضور",perm:"الأذونات",pay:"الرواتب",set:"الإعدادات"};
+async function go(id){
+ $$(".sec").forEach(s=>s.hidden=s.id!="s-"+id);$$(".nv").forEach(b=>b.classList.toggle("on",b.dataset.go==id));
+ $("#title").textContent=T[id];$("#side").classList.remove("open");
+ try{await({dash:rDash,emp:rEmp,att:rAtt,perm:rPerm,pay:rPay,set:rSet})[id]()}catch(e){toast("تعذر تحميل البيانات",1)}}
+
+/* ---------- dashboard ---------- */
+function rDash(){
+ const t=today(),m=t.slice(0,7),A=S.emps.filter(e=>e.status=="active"),st=e=>M(m).att[m+"-"+e.id]?.[t];
+ const rec=A.filter(st).length,pre=A.filter(e=>["present","late"].includes(st(e))).length,abs=A.filter(e=>st(e)=="absent").length;
+ $("#tDate").textContent=new Date().toLocaleDateString(L,{weekday:"long",day:"numeric",month:"long"});
+ $("#tProg").textContent=A.length?`تم تسجيل ${rec} من ${A.length} موظفين اليوم`:"لا يوجد موظفون بعد. ابدأ بإضافة أول موظف.";
+ $("#tags").innerHTML=A.map(e=>`<div class="tag">${av(e.name,st(e))}<div><b>${esc(e.name.split(" ")[0])}</b><small>${st(e)?ST[st(e)]:"لم يُسجل"}</small></div></div>`).join("");
+ $("#metrics").innerHTML=[["الموظفون النشطون",A.length],["حاضرون اليوم",pre],["غائبون اليوم",abs],["إجمالي الأساسي",money(A.reduce((s,e)=>s+(+e.salary||0),0))]].map(([l,v])=>`<div><b>${v}</b><small>${l}</small></div>`).join("");
+ const c={present:0,absent:0,vacation:0,late:0};A.forEach(e=>Object.values(M(m).att[m+"-"+e.id]||{}).forEach(s=>c[s]!==undefined&&c[s]++));
+ const tot=Object.values(c).reduce((a,b)=>a+b,0),col={present:"--lf",absent:"--red",vacation:"--sky",late:"--sun"};
+ $("#attSum").innerHTML=tot?`<div class="stack">${Object.keys(c).map(k=>`<span style="width:${c[k]/tot*100}%;background:var(${col[k]})"></span>`).join("")}</div><div class="lg">${Object.keys(c).map(k=>`<span><i style="background:var(${col[k]})"></i>${ST[k]} ${c[k]}</span>`).join("")}</div>`:`<div class="empty">لا توجد سجلات حضور لهذا الشهر</div>`;
+ $("#paySum").innerHTML=A.length?A.slice(0,8).map(e=>{const r=calc(e,m);return`<div class="row2"><div><span>${esc(e.name)}</span><b>${money(r.net)}</b></div><div class="bb"><i style="width:${r.base?Math.min(100,r.net/r.base*100):0}%"></i></div></div>`}).join(""):`<div class="empty">لا توجد بيانات</div>`}
+
+/* ---------- employees ---------- */
+const OPT=a=>a.map(v=>[v,v]);
+const F=[["name","الاسم الكامل *"],["jobTitle","المسمى الوظيفي *"],["dept","القسم","sel",OPT(["إدارة","تعليم","رعاية","صيانة","أخرى"])],["status","الحالة","sel",[["active","نشط"],["inactive","غير نشط"]]],
+ ["salary","الراتب الأساسي الشهري *","number"],["transport","بدل المواصلات","number"],["bonus","بدل ثابت","number"],["insurance","التأمين","number"],
+ ["phone","الهاتف","tel"],["emergency","هاتف الطوارئ","tel"],["nationalId","الرقم القومي"],["hireDate","تاريخ التعيين","date"],["gender","الجنس","sel",OPT(["أنثى","ذكر"])],["bank","الحساب البنكي"],["address","العنوان"]];
+const form=(id,fs)=>$(id).innerHTML=fs.map(([k,l,t,o])=>`<label>${l}${t=="sel"?`<select data-k="${k}">${o.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select>`:`<input data-k="${k}" type="${t||"text"}"${t=="number"?' step="any" min="0"':""}>`}</label>`).join("");
+const vals=id=>Object.fromEntries($$(id+" [data-k]").map(i=>[i.dataset.k,i.type=="number"?(parseFloat(i.value)||0):i.value.trim()]));
+const fill=(id,o)=>$$(id+" [data-k]").forEach(i=>i.value=o[i.dataset.k]??(i.type=="number"?0:i.tagName=="SELECT"?i.options[0].value:""));
+
+function rEmp(){
+ const q=$("#eq").value.trim().toLowerCase(),d=$("#ed").value,s=$("#es").value;
+ const l=S.emps.filter(e=>(!q||e.name.toLowerCase().includes(q))&&(!d||e.dept==d)&&(!s||e.status==s));
+ $("#eb").innerHTML=l.map(e=>`<tr><td class="nm">${av(e.name)}<div><b>${esc(e.name)}</b><small>${esc(e.jobTitle)}</small></div></td><td data-l="القسم">${esc(e.dept)}</td><td class="n" data-l="الراتب">${money(e.salary)}</td>
+  <td data-l="الحالة"><span class="pill ${e.status=="active"?"":"g"}">${e.status=="active"?"نشط":"غير نشط"}</span></td>
+  <td class="acts"><button class="btn sm" data-act="editEmp" data-id="${e.id}">تعديل</button> <button class="btn sm bad" data-act="delEmp" data-id="${e.id}">حذف</button></td></tr>`).join("")||`<tr><td colspan="5" class="empty">${S.emps.length?"لا توجد نتائج مطابقة":"لم تتم إضافة موظفين بعد. اضغط «إضافة موظف» للبدء."}</td></tr>`}
+function openEmp(id){S.edit=id;const e=S.emps.find(x=>x.id==id)||{};$("#dEmpT").textContent=id?"تعديل بيانات الموظف":"إضافة موظف";fill("#eForm",e);$("#dEmp").showModal()}
+function saveEmp(){
+ const v=vals("#eForm");if(!v.name||!v.jobTitle||!v.salary)return toast("الاسم والمسمى الوظيفي والراتب مطلوبة",1);
+ v.dailySalary=+(v.salary/30).toFixed(2);const id=S.edit||doc(collection(db,"employees")).id;
+ const i=S.emps.findIndex(e=>e.id==id),o={...(S.emps[i]||{}),...v,id};i>=0?S.emps[i]=o:S.emps.push(o);
+ setDoc(doc(db,"employees",id),o).catch(e=>toast("تعذر الحفظ ("+e.code+")",1));$("#dEmp").close();rEmp();toast(S.edit?"تم تحديث بيانات الموظف":"تمت إضافة الموظف")}
+function delEmp(id){const e=S.emps.find(x=>x.id==id);if(!e||!confirm("حذف «"+e.name+"»؟ لا يمكن التراجع."))return;
+ S.emps=S.emps.filter(x=>x.id!=id);deleteDoc(doc(db,"employees",id)).catch(e=>toast("تعذر الحذف ("+e.code+")",1));rEmp();toast("تم حذف الموظف")}
+
+/* ---------- attendance ---------- */
+const act=()=>S.emps.filter(e=>e.status=="active");
+async function rAtt(){
+ const d=$("#aDate").value||today(),m=d.slice(0,7);await loadMonth(m);const A=act();
+ $("#al").innerHTML=A.map(e=>{const rec=M(m).att[m+"-"+e.id]?.[d],cur=rec||"present";
+  return`<div class="arow" data-e="${e.id}"><div class="nm">${av(e.name)}<div><b>${esc(e.name)}</b><small>${esc(e.jobTitle)} · ${rec?"محفوظ":"لم يُحفظ"}</small></div></div>
+  <div class="seg">${Object.keys(ST).map(s=>`<button class="s-${s} ${cur==s?"on":""}" data-act="att" data-id="${e.id}" data-s="${s}">${ST[s]}</button>`).join("")}</div></div>`}).join("")||`<div class="empty">أضف موظفين أولاً من صفحة الموظفين</div>`}
+function setAtt(id,s,save=true){const d=$("#aDate").value,m=d.slice(0,7),o=M(m),k=m+"-"+id;(o.att[k]=o.att[k]||{})[d]=s;
+ if(save)W("attendance",m+"_"+id,{month:m,empId:id,days:{[d]:s}})}
+async function attSave(){const d=$("#aDate").value,m=d.slice(0,7),b=writeBatch(db);
+ $$("#al .arow").forEach(r=>{const id=r.dataset.e,s=r.querySelector(".on")?.dataset.s||"present";setAtt(id,s,false);b.set(doc(db,"attendance",m+"_"+id),{month:m,empId:id,days:{[d]:s}},{merge:true})});
+ if(d==today()){S.last=d;b.set(doc(db,"meta","app"),{lastAttendanceDate:d},{merge:true})}
+ b.commit().catch(e=>toast("تعذر الحفظ ("+e.code+")",1));toast("تم حفظ سجل الحضور");rAtt()}
+
+/* ---------- permissions ---------- */
+async function rPerm(){
+ const d=$("#pDate").value||today(),m=d.slice(0,7);await loadMonth(m);
+ $("#pl").innerHTML=act().map(e=>{const p=M(m).perm[m+"-"+e.id]?.[d]||{hours:0,minutes:0};
+  return`<div class="arow" data-e="${e.id}"><div class="nm">${av(e.name)}<div><b>${esc(e.name)}</b><small>${esc(e.jobTitle)}</small></div></div>
+  <div class="prow"><label>ساعات<input type="number" min="0" max="12" data-h value="${p.hours||0}"></label><label>دقائق<input type="number" min="0" max="59" data-m value="${p.minutes||0}"></label></div></div>`}).join("")||`<div class="empty">أضف موظفين أولاً من صفحة الموظفين</div>`}
+function permSave(){const d=$("#pDate").value,m=d.slice(0,7),b=writeBatch(db);
+ $$("#pl .arow").forEach(r=>{const id=r.dataset.e,v={hours:parseInt(r.querySelector("[data-h]").value)||0,minutes:parseInt(r.querySelector("[data-m]").value)||0},k=m+"-"+id;
+  (M(m).perm[k]=M(m).perm[k]||{})[d]=v;b.set(doc(db,"permissions",m+"_"+id),{month:m,empId:id,days:{[d]:v}},{merge:true})});
+ b.commit().catch(e=>toast("تعذر الحفظ ("+e.code+")",1));toast("تم حفظ الأذونات")}
+
+/* ---------- payroll ---------- */
+async function rPay(){
+ const m=$("#pMonth").value;await loadMonth(m);
+ $("#pb").innerHTML=S.emps.map(e=>{const r=calc(e,m);return`<tr><td class="nm">${av(e.name)}<b>${esc(e.name)}</b></td><td class="n" data-l="الأساسي">${num(r.base)}</td><td class="n" data-l="أيام العمل">${r.days}</td><td class="n" data-l="الغياب">${r.ab}</td><td class="n" data-l="ساعات الإذن">${num(r.ps,2)}</td><td class="n" data-l="الصافي"><b>${num(r.net,2)}</b></td>
+  <td class="acts"><button class="btn sm" data-act="payEdit" data-id="${e.id}">تعديل</button> <button class="btn sm pri" data-act="slip" data-id="${e.id}">القسيمة</button></td></tr>`}).join("")||`<tr><td colspan="7" class="empty">لا يوجد موظفون</td></tr>`}
+const EDF=[["transport","بدل المواصلات","number"],["bonus","بدل ثابت / مكافأة","number"],["overtimeHours","ساعات إضافية","number"],["advance","سلفة","number"],["otherDeductions","خصومات أخرى","number"],["insurance","التأمين","number"]];
+function payEdit(id){const m=$("#pMonth").value,e=S.emps.find(x=>x.id==id),r=calc(e,m);S.ed=id;$("#dEditT").textContent="تعديل راتب "+e.name+" · "+mLabel(m);form("#edForm",EDF);
+ fill("#edForm",{transport:r.tr,bonus:r.bo,insurance:r.ins,overtimeHours:r.ot,advance:r.adv,otherDeductions:r.oth});$("#dEdit").showModal()}
+function saveEdit(){const m=$("#pMonth").value,id=S.ed,v=vals("#edForm"),o=M(m),k=m+"-"+id;
+ o.pay[k]={...(o.pay[k]||{}),month:m,empId:id,edits:v};W("payroll",m+"_"+id,{month:m,empId:id,edits:v});$("#dEdit").close();rPay();toast("تم حفظ تعديلات الراتب")}
+function snap(){const m=$("#pMonth").value,b=writeBatch(db);S.emps.forEach(e=>b.set(doc(db,"payroll",m+"_"+e.id),{month:m,empId:e.id,snapshot:calc(e,m)},{merge:true}));
+ b.commit().then(()=>toast("تم حفظ رواتب "+mLabel(m))).catch(e=>toast("تعذر الحفظ ("+e.code+")",1))}
+const slipHTML=(e,m)=>{const r=calc(e,m),R=(a,b)=>`<div class="r"><span>${a}</span><span>${b}</span></div>`;
+ return`<div class="slip"><h3>${esc(S.set.name)}</h3><small>قسيمة راتب · ${mLabel(m)}</small>${R("الموظف","<b>"+esc(e.name)+"</b>")}${R("الوظيفة",esc(e.jobTitle))}
+ <h4>المستحقات</h4>${R("الراتب الأساسي",money(r.base,2))}${R("بدل المواصلات",money(r.tr,2))}${R("بدل ثابت / مكافأة",money(r.bo,2))}${R("إضافي ("+num(r.ot,1)+" ساعة)",money(r.otp,2))}
+ <h4>الخصومات</h4>${R("الغياب ("+r.ab+" يوم)","− "+money(r.ad,2))}${R("الإذن ("+num(r.ps,2)+" ساعة)","− "+money(r.pd,2))}${R("التأمين","− "+money(r.ins,2))}${r.adv?R("سلفة","− "+money(r.adv,2)):""}${r.oth?R("خصومات أخرى","− "+money(r.oth,2)):""}
+ <div class="r t"><span>صافي الراتب</span><span>${money(r.net,2)}</span></div><small style="margin-top:28px;text-align:center">التوقيع: ____________________</small></div>`};
+function printHTML(h){$("#pa").innerHTML=h;document.body.classList.add("pr");print()}
+addEventListener("afterprint",()=>{document.body.classList.remove("pr");$("#pa").innerHTML=""});
+
+/* ---------- settings ---------- */
+function rSet(){$("#sn").value=S.set.name;$("#sc").value=S.set.currency;$("#so").value=S.set.overtime;$("#sp").value=S.set.permRate}
+async function savePw(){const a=$("#pw0").value,n=$("#pw1").value;
+ if(n.length<8)return toast("كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل",1);if(n!=$("#pw2").value)return toast("كلمتا المرور غير متطابقتين",1);
+ try{const u=auth.currentUser;await reauthenticateWithCredential(u,EmailAuthProvider.credential(u.email,a));await updatePassword(u,n);toast("تم تغيير كلمة المرور");["#pw0","#pw1","#pw2"].forEach(i=>$(i).value="")}
+ catch(e){toast(e.code=="auth/invalid-credential"||e.code=="auth/wrong-password"?"كلمة المرور الحالية غير صحيحة":"تعذر تغيير كلمة المرور",1)}}
+
+/* ---------- events ---------- */
+const A={
+ menu:()=>$("#side").classList.toggle("open"),out:()=>signOut(auth),closeD:b=>b.closest("dialog").close(),
+ addEmp:()=>{go("emp");openEmp(null)},editEmp:b=>openEmp(b.dataset.id),delEmp:b=>delEmp(b.dataset.id),saveEmp,
+ att:b=>{setAtt(b.dataset.id,b.dataset.s);const r=b.closest(".arow");r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x==b));r.querySelector("small").textContent=S.emps.find(e=>e.id==b.dataset.id).jobTitle+" · محفوظ"},
+ attAll:()=>$$("#al .arow").forEach(r=>r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.s=="present"))),attSave,permSave,
+ payEdit:b=>payEdit(b.dataset.id),saveEdit,snap,
+ slip:b=>{const m=$("#pMonth").value,e=S.emps.find(x=>x.id==b.dataset.id);S.slip=slipHTML(e,m);$("#slipB").innerHTML=S.slip;$("#dSlip").showModal()},printSlip:()=>printHTML(S.slip),
+ printPay:()=>{const m=$("#pMonth").value;printHTML(`<h2>${esc(S.set.name)} · رواتب ${mLabel(m)}</h2><table><tr><th>الموظف</th><th>الأساسي</th><th>الخصومات</th><th>الإضافات</th><th>الصافي</th></tr>${S.emps.map(e=>{const r=calc(e,m);return`<tr><td>${esc(e.name)}</td><td>${num(r.base)}</td><td>${num(r.ded,2)}</td><td>${num(r.add,2)}</td><td><b>${num(r.net,2)}</b></td></tr>`}).join("")}</table>`)},
+ saveSet:()=>{S.set={name:$("#sn").value.trim()||"Alghars Aljadeed",currency:$("#sc").value,overtime:parseFloat($("#so").value)||1.5,permRate:parseFloat($("#sp").value)||0};
+  W("settings","main",S.set);$("#sName").textContent=S.set.name;toast("تم حفظ الإعدادات")},savePw};
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g)return go(g.dataset.go);const a=e.target.closest("[data-act]");if(a)A[a.dataset.act]?.(a)});
+$$("dialog").forEach(d=>d.addEventListener("click",e=>{if(e.target==d)d.close()}));
+["eq","ed","es"].forEach(i=>$("#"+i).addEventListener("input",rEmp));
+$("#aDate").onchange=rAtt;$("#pDate").onchange=rPerm;$("#pMonth").onchange=rPay;
+form("#eForm",F);$("#aDate").value=$("#pDate").value=today();
+{const n=new Date();$("#pMonth").innerHTML=Array.from({length:12},(_,i)=>{const d=new Date(n.getFullYear(),n.getMonth()-i,1),v=d.getFullYear()+"-"+pad(d.getMonth()+1);return`<option value="${v}">${mLabel(v)}</option>`}).join("")}
+
+/* ---------- auth + startup ---------- */
+const show=w=>{$("#boot").hidden=1;$("#login").hidden=w!="login";$("#app").hidden=w!="app"};
+$("#lf").onsubmit=async ev=>{ev.preventDefault();const u=$("#lu").value.trim(),b=$("#lb");if(!ok)return;b.disabled=true;$("#le").textContent="";
+ try{await signInWithEmailAndPassword(auth,u.includes("@")?u:u.toLowerCase()+"@"+DOMAIN,$("#lp").value)}
+ catch(e){$("#le").textContent=e.code=="auth/network-request-failed"?"تعذر الاتصال بالإنترنت":e.code=="auth/too-many-requests"?"محاولات كثيرة. حاول لاحقاً":"اسم المستخدم أو كلمة المرور غير صحيحة"}
+ b.disabled=false};
+if(!ok){$("#cfgWarn").hidden=0;$("#lb").disabled=1;show("login")}
+else onAuthStateChanged(auth,async u=>{
+ if(!u){$("#lp").value="";return show("login")}
+ $("#uName").textContent=u.email.split("@")[0];
+ try{const[s,mt,es]=await Promise.all([getDoc(doc(db,"settings","main")),getDoc(doc(db,"meta","app")),getDocs(collection(db,"employees")),loadMonth(today().slice(0,7))]);
+  if(s.exists())S.set={...S.set,...s.data()};S.last=mt.data()?.lastAttendanceDate||null;S.emps=es.docs.map(d=>({...d.data(),id:d.id}));
+  $("#sName").textContent=S.set.name;show("app");go("dash")}
+ catch(e){$("#bootMsg").textContent="تعذر قراءة البيانات ("+(e.code||"خطأ")+"). تأكد من قواعد Firestore ثم أعد المحاولة.";$("#boot").hidden=0}});
+</script>
+</body>
+</html>

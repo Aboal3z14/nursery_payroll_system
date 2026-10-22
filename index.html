@@ -369,16 +369,37 @@ async function loadMonth(m){
  r.forEach((s,i)=>s.forEach(d=>{const x=d.data(),k=m+"-"+x.empId;if(i==0)o.att[k]=x.days||{};else if(i==1)o.perm[k]=x.days||{};else o.pay[k]=x}));
  S.mo.set(m,o);return o}
 
-/* payroll maths: same rules as the original system */
+// Load the adjacent months so a Friday at a month boundary can check both neighboring days.
+const payrollMonth=(m,offset)=>{const [year,month]=m.split("-").map(Number),d=new Date(year,month-1+offset,1);return d.getFullYear()+"-"+pad(d.getMonth()+1)};
+async function loadPayrollMonths(m){await Promise.all([-1,0,1].map(n=>loadMonth(payrollMonth(m,n))))}
+const payDays=m=>{const [year,month]=m.split("-").map(Number);return month===2?new Date(year,2,0).getDate():30};
+const addDays=(date,delta)=>{const [y,m,d]=date.split("-").map(Number);return iso(new Date(y,m-1,d+delta))};
+const isFriday=date=>{const [y,m,d]=date.split("-").map(Number);return new Date(y,m-1,d).getDay()===5};
+const isAbsent=(e,date)=>{const m=date.slice(0,7);return M(m).att[m+"-"+e.id]?.[date]==="absent"};
+function automaticFridayAbsences(e,m){
+ const [year,month]=m.split("-").map(Number),last=new Date(year,month,0).getDate();
+ let count=0;
+ for(let d=1;d<=last;d++){
+  const friday=iso(new Date(year,month-1,d));
+  if(isFriday(friday)&&(isAbsent(e,addDays(friday,-1))||isAbsent(e,addDays(friday,1))))count++;
+ }
+ return count;
+}
+
+/* payroll maths: 30-day months, actual February days, 6-hour shifts and paid Fridays */
 function calc(e,m){
  const o=M(m),k=m+"-"+e.id,a=o.att[k]||{},p=o.perm[k]||{},x=(o.pay[k]||{}).edits||{};
- let pr=0,ab=0,lt=0,ph=0,pm=0;
- for(const s of Object.values(a)){if(s=="present")pr++;else if(s=="absent")ab++;else if(s=="late")lt++}
+ let pr=0,recordedAb=0,lt=0,ph=0,pm=0;
+ for(const [date,status] of Object.entries(a)){
+  if(date.slice(0,7)!==m||isFriday(date))continue; // Friday is paid; only adjacent absences can trigger a Friday deduction.
+  if(status==="present")pr++;else if(status==="absent")recordedAb++;else if(status==="late")lt++;
+ }
  for(const v of Object.values(p)){ph+=v.hours||0;pm+=v.minutes||0}
- const ps=ph+pm/60,base=+e.salary||0,day=base/30,hr=day/8,g=(f,d)=>x[f]!==undefined?x[f]:(d||0);
+ const fridayAb=automaticFridayAbsences(e,m),ab=recordedAb+fridayAb;
+ const ps=ph+pm/60,base=+e.salary||0,day=base/payDays(m),hr=day/6,g=(f,d)=>x[f]!==undefined?x[f]:(d||0);
  const tr=g("transport",e.transport),bo=g("bonus",e.bonus),ins=g("insurance",e.insurance),ot=x.overtimeHours||0,adv=x.advance||0,oth=x.otherDeductions||0;
  const otp=ot*hr*S.set.overtime,pd=ps*hr*S.set.permRate,ad=ab*day,ded=ad+pd+ins+adv+oth,add=tr+bo+otp;
- return{base,days:pr+lt,ab,ps,tr,bo,ins,ot,otp,pd,adv,oth,ad,ded,add,net:base-ded+add}}
+ return{base,days:pr+lt,ab,recordedAb,fridayAb,ps,tr,bo,ins,ot,otp,pd,adv,oth,ad,ded,add,net:base-ded+add}}
 
 /* ---------- navigation ---------- */
 const T={dash:"لوحة التحكم",emp:"الموظفون والرواتب",students:"الطلاب",classes:"الفصول",satt:"حضور الطلاب",fees:"الأقساط والمصروفات",alerts:"التنبيهات",att:"تسجيل حضور الموظفين",perm:"الأذونات",pay:"الرواتب",set:"الإعدادات"};
@@ -390,8 +411,8 @@ async function go(id){
  try{await({dash:rDash,emp:rEmp,students:rStudents,classes:rClasses,satt:rStudentAtt,fees:rFees,alerts:rAlerts,att:rAtt,perm:rPerm,pay:rPay,set:rSet})[id]()}catch(e){toast("تعذر تحميل البيانات",1)}}
 
 /* ---------- dashboard ---------- */
-function rDash(){
- const t=today(),m=t.slice(0,7),A=S.emps.filter(e=>e.status=="active"),st=e=>M(m).att[m+"-"+e.id]?.[t];
+async function rDash(){
+ const t=today(),m=t.slice(0,7);await loadPayrollMonths(m);const A=S.emps.filter(e=>e.status=="active"),st=e=>M(m).att[m+"-"+e.id]?.[t];
  const rec=A.filter(st).length,pre=A.filter(e=>["present","late"].includes(st(e))).length,abs=A.filter(e=>st(e)=="absent").length;
  $("#tDate").textContent=new Date().toLocaleDateString(L,{weekday:"long",day:"numeric",month:"long"});
  $("#tProg").textContent=A.length?`تم تسجيل ${rec} من ${A.length} موظفين اليوم`:"لا يوجد موظفون بعد. ابدأ بإضافة أول موظف.";
@@ -595,6 +616,9 @@ function delEmp(id){const e=S.emps.find(x=>x.id==id);if(!e||!confirm("حذف «"
 const act=()=>S.emps.filter(e=>e.status=="active");
 async function rAtt(){
  const d=$("#aDate").value||today(),m=d.slice(0,7);await loadMonth(m);const A=act();
+ const friday=isFriday(d);
+ $('[data-act="attSave"]').disabled=friday;$('[data-act="attAll"]').disabled=friday;
+ if(friday){$("#al").innerHTML='<div class="empty">الجمعة إجازة مدفوعة ولا تحتاج تسجيل حضور. يُحتسب خصم الجمعة تلقائياً إذا سُجل غياب الخميس أو السبت، دون تكرار الخصم.</div>';return}
  $("#al").innerHTML=A.map(e=>{const rec=M(m).att[m+"-"+e.id]?.[d],cur=rec||"present";
   return`<div class="arow" data-e="${e.id}"><div class="nm">${av(e.name)}<div><b>${esc(e.name)}</b><small>${esc(e.jobTitle)} · ${rec?"محفوظ":"لم يُحفظ"}</small></div></div>
   <div class="seg">${Object.keys(ST).map(s=>`<button class="s-${s} ${cur==s?"on":""}" data-act="att" data-id="${e.id}" data-s="${s}">${ST[s]}</button>`).join("")}</div></div>`}).join("")||`<div class="empty">أضف موظفين أولاً من صفحة الموظفين</div>`}
@@ -618,8 +642,8 @@ function permSave(){const d=$("#pDate").value,m=d.slice(0,7),b=writeBatch(db);
 
 /* ---------- payroll ---------- */
 async function rPay(){
- const m=$("#pMonth").value;await loadMonth(m);
- $("#pb").innerHTML=S.emps.map(e=>{const r=calc(e,m);return`<tr><td class="nm">${av(e.name)}<b>${esc(e.name)}</b></td><td class="n" data-l="الأساسي">${num(r.base)}</td><td class="n" data-l="أيام العمل">${r.days}</td><td class="n" data-l="الغياب">${r.ab}</td><td class="n" data-l="ساعات الإذن">${num(r.ps,2)}</td><td class="n" data-l="الصافي"><b>${num(r.net,2)}</b></td>
+ const m=$("#pMonth").value;await loadPayrollMonths(m);
+ $("#pb").innerHTML=S.emps.map(e=>{const r=calc(e,m);return`<tr><td class="nm">${av(e.name)}<b>${esc(e.name)}</b></td><td class="n" data-l="الأساسي">${num(r.base)}</td><td class="n" data-l="أيام العمل">${r.days}</td><td class="n" data-l="الغياب">${r.ab}${r.fridayAb?'<small>منها '+r.fridayAb+' جمعة تلقائياً</small>':''}</td><td class="n" data-l="ساعات الإذن">${num(r.ps,2)}</td><td class="n" data-l="الصافي"><b>${num(r.net,2)}</b></td>
   <td class="acts"><button class="btn sm" data-act="payEdit" data-id="${e.id}">تعديل</button> <button class="btn sm pri" data-act="slip" data-id="${e.id}">القسيمة</button></td></tr>`}).join("")||`<tr><td colspan="7" class="empty">لا يوجد موظفون</td></tr>`}
 const EDF=[["transport","بدل المواصلات","number"],["bonus","بدل ثابت / مكافأة","number"],["overtimeHours","ساعات إضافية","number"],["advance","سلفة","number"],["otherDeductions","خصومات أخرى","number"],["insurance","التأمين","number"]];
 function payEdit(id){const m=$("#pMonth").value,e=S.emps.find(x=>x.id==id),r=calc(e,m);S.ed=id;$("#dEditT").textContent="تعديل راتب "+e.name+" · "+mLabel(m);form("#edForm",EDF);
@@ -631,7 +655,7 @@ function snap(){const m=$("#pMonth").value,b=writeBatch(db);S.emps.forEach(e=>b.
 const slipHTML=(e,m)=>{const r=calc(e,m),R=(a,b)=>`<div class="r"><span>${a}</span><span>${b}</span></div>`;
  return`<div class="slip"><h3>${esc(S.set.name)}</h3><small>قسيمة راتب · ${mLabel(m)}</small>${R("الموظف","<b>"+esc(e.name)+"</b>")}${R("الوظيفة",esc(e.jobTitle))}
  <h4>المستحقات</h4>${R("الراتب الأساسي",money(r.base,2))}${R("بدل المواصلات",money(r.tr,2))}${R("بدل ثابت / مكافأة",money(r.bo,2))}${R("إضافي ("+num(r.ot,1)+" ساعة)",money(r.otp,2))}
- <h4>الخصومات</h4>${R("الغياب ("+r.ab+" يوم)","− "+money(r.ad,2))}${R("الإذن ("+num(r.ps,2)+" ساعة)","− "+money(r.pd,2))}${R("التأمين","− "+money(r.ins,2))}${r.adv?R("سلفة","− "+money(r.adv,2)):""}${r.oth?R("خصومات أخرى","− "+money(r.oth,2)):""}
+ <h4>الخصومات</h4>${R("الغياب ("+r.ab+" يوم"+(r.fridayAb?"، منها "+r.fridayAb+" جمعة تلقائياً":"")+")","− "+money(r.ad,2))}${R("الإذن ("+num(r.ps,2)+" ساعة)","− "+money(r.pd,2))}${R("التأمين","− "+money(r.ins,2))}${r.adv?R("سلفة","− "+money(r.adv,2)):""}${r.oth?R("خصومات أخرى","− "+money(r.oth,2)):""}
  <div class="r t"><span>صافي الراتب</span><span>${money(r.net,2)}</span></div><small style="margin-top:28px;text-align:center">التوقيع: ____________________</small></div>`};
 function printHTML(h){$("#pa").innerHTML=h;document.body.classList.add("pr");print()}
 addEventListener("afterprint",()=>{document.body.classList.remove("pr");$("#pa").innerHTML=""});
@@ -681,3 +705,4 @@ else onAuthStateChanged(auth,async u=>{
 </script>
 </body>
 </html>
+
